@@ -33,11 +33,11 @@ def Wb(f):
 ### structures
 
 spans = [10]
-l2ds = [12.5]
-gammas = [0.1]
+l2ds = [10]
+gammas = [0.1,0.5,1,2,5,10]
 
 ### parameters often changed
-n_modes = 2  # number of modes used shall not exceed that extracted from abaqus modal analysis
+n_modes = 50  # number of modes used shall not exceed that extracted from abaqus modal analysis
 dt = 0.0005  # s
 t_cut = 0
 
@@ -73,7 +73,7 @@ for span in spans:
             # Input obj file
             mdl = Structure(name='mdl_span'+str(span).replace('.','_')+'_l2d'+str(l2d).replace('.','_')+'_gamma'+str(gamma).replace('.','_'), path=os.path.dirname(os.path.abspath(__file__)))
             # file_obj = 'D:/Master_Thesis/modal_span_depth_thickness/mdl_t_0_01span/'+mdl.name+'.obj'
-            file_obj = 'C:/Users/Hao/Desktop/Master_Thesis/modal_span_depth_thickness/'+mdl.name+'.obj'
+            file_obj = 'C:/Users/Hao/Desktop/Master_Thesis/modal/modal_span_depth_thickness/'+mdl.name+'.obj'
             mdl = Structure.load_from_obj(file_obj)
             f_n = np.array(mdl.results['step_modal']['frequencies'])
             m_n = np.array(mdl.results['step_modal']['masses'])
