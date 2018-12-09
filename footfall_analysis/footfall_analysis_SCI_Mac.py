@@ -29,12 +29,13 @@ def Wb(f):
         Wb = 16/f
     return Wb
 
+start = timeit.default_timer()
 
 ### structures
 
-spans = [9]
-l2ds = [12.5]
-gammas = [0.5,1,2]
+spans = [5]
+l2ds = [20]
+gammas = [0.1,0.5,1,2,5,10]
 
 ### parameters often changed
 n_modes = 50  # number of modes used shall not exceed that extracted from abaqus modal analysis
@@ -73,7 +74,7 @@ for span in spans:
             # Input obj file
             mdl = Structure(name='mdl_span'+str(span).replace('.','_')+'_l2d'+str(l2d).replace('.','_')+'_gamma'+str(gamma).replace('.','_'), path=os.path.dirname(os.path.abspath(__file__)))
             # file_obj = 'D:/Master_Thesis/modal_span_depth_thickness/mdl_t_0_01span/'+mdl.name+'.obj'
-            file_obj = 'D:/Master_Thesis/modal_span_depth_thickness/'+mdl.name+'.obj'
+            file_obj = 'D:/Master_Thesis/modal/modal_span_depth_thickness/'+mdl.name+'.obj'
             mdl = Structure.load_from_obj(file_obj)
             f_n = np.array(mdl.results['step_modal']['frequencies'])
             m_n = np.array(mdl.results['step_modal']['masses'])
@@ -98,7 +99,7 @@ for span in spans:
             uz_ms = np.array(uz_ms)
 
             # ODE solving and rms calculation
-            start = timeit.default_timer()
+            # start = timeit.default_timer()
 
             dis_mode = np.zeros((n_nodes, n))
             vel_mode = np.zeros((n_nodes, n))
@@ -181,7 +182,7 @@ for span in spans:
 
                 print('ODE: mode', str(i + 1))
 
-            stop = timeit.default_timer() #
+            # stop = timeit.default_timer() #
 
             ### plot
 
@@ -253,12 +254,16 @@ for span in spans:
             # axes2.plot([1, n_modes + 1], [0, 0], '--', color=[0.7, 0.7, 0.7])
 
             ### save important variables
-            with open ('D:/Master_Thesis/footfall_analysis/data/data_mdl_funicular_0_4m/data_'+mdl.name+'.pkl','wb') as data:
-                pickle.dump([W,te,t,F,f_n,m_n,node_lp,n_modes,dt,dis_modal[node_lp],acc_modal[node_lp],rms_modal,rms_modal_weight,dis_modal_1[node_lp],acc_modal_1[node_lp],rms_modal_1,rms_modal_weight_1,rms_acc_modal,rms_modes,rms_modes_weight,rms_acc_modes,R,R_weight,R_acc,Gamma_n],data)
+            # with open ('D:/Master_Thesis/code_data/footfall_analysis/data/data_mdl_0_4m/data_'+mdl.name+'.pkl','wb') as data:
+            #     pickle.dump([W,te,t,F,f_n,m_n,node_lp,n_modes,dt,dis_modal[node_lp],acc_modal[node_lp],rms_modal,rms_modal_weight,dis_modal_1[node_lp],acc_modal_1[node_lp],rms_modal_1,rms_modal_weight_1,rms_acc_modal,rms_modes,rms_modes_weight,rms_acc_modes,R,R_weight,R_acc,Gamma_n],data)
 
-            print('Time for solving ' + str(n_modes) + ' modes of ' + mdl.name + ': ' + str(stop - start) + 's')
+            # print('Time for solving ' + str(n_modes) + ' modes of ' + mdl.name + ': ' + str(stop - start) + 's')
 
 plt.show()
+
+stop = timeit.default_timer()
+
+print('Time for solving: ' + str(stop - start) + 's')
 # plt.show(block=False)
 
 # print()

@@ -32,8 +32,8 @@ def Wb(f):
 
 ### structures
 
-spans = [5]
-l2ds = [20]
+spans = [5,6,7,8,9,10]
+l2ds = [10,12.5,15,17.5,20]
 
 # spans = [5,8,10]
 # l2ds = [10,15,20]
@@ -73,12 +73,15 @@ for span in spans:
 
         # Input obj file
         mdl = Structure(name='mdl_plate_span'+str(span).replace('.','_')+'_l2d'+str(l2d).replace('.','_'), path=os.path.dirname(os.path.abspath(__file__)))
-        file_obj = 'D:/Master_Thesis/modal_plate_span_0_4depth/'+mdl.name+'.obj'
+        file_obj = 'D:/Master_Thesis/modal/modal_plate_span_0_4depth/'+mdl.name+'.obj'
         mdl = Structure.load_from_obj(file_obj)
         f_n = np.array(mdl.results['step_modal']['frequencies'])
         m_n = np.array(mdl.results['step_modal']['masses'])
         n_modes_max = f_n.shape[0]
-        node_lp = mdl.sets['nset_loadPoint']['selection']
+        try:
+            node_lp = mdl.sets['nset_loadPoint']['selection']
+        except:
+            node_lp = mdl.sets['nset_loadPoint'].selection
         n_nodes = mdl.nodes.__len__()
         s = np.zeros(n_nodes) # spatial distribution of load
         s[node_lp] = 1
@@ -245,9 +248,11 @@ for span in spans:
         axes2.plot([1, n_modes + 1], [0, 0], '--', color=[0.7, 0.7, 0.7])
 
         ### save important variables
-        # with open ('data_'+mdl.name+'.pkl','wb') as data:
-        #     pickle.dump([W,te,t,F,f_n,m_n,node_lp,n_modes,dt,dis_modal[node_lp],acc_modal[node_lp],rms_modal,rms_modal_weight,rms_acc_modal,rms_modes,rms_modes_weight,rms_acc_modes,R,R_weight,R_acc,Gamma_n],data)
-
+        with open('D:/Master_Thesis/code_data/footfall_analysis_plate_0_4depth/data/data_' + mdl.name + '.pkl',
+                  'wb') as data:
+            pickle.dump([W, te, t, F, f_n, m_n, node_lp, n_modes, dt, dis_modal[node_lp], acc_modal[node_lp], rms_modal,
+                         rms_modal_weight, dis_modal_1[node_lp], acc_modal_1[node_lp], rms_modal_1, rms_modal_weight_1,
+                         rms_acc_modal, rms_modes, rms_modes_weight, rms_acc_modes, R, R_weight, R_acc, Gamma_n], data)
         print('Time for solving ' + str(n_modes) + ' modes of ' + mdl.name + ': ' + str(stop - start) + 's')
 
 plt.show()
