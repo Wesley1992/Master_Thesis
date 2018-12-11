@@ -235,8 +235,8 @@ def solve_ODE(span, l2d, gamma):
 start_mdls = timeit.default_timer()
 
 spans = [10]
-l2ds = [17.5]
-gammas = [0.1,0.5,1,2,5,10]
+l2ds = [15]
+gammas = [0.5,1]
 
 ### parameters often changed
 n_modes = 50  # number of modes used shall not exceed that extracted from abaqus modal analysis
