@@ -35,9 +35,13 @@ def Wb(f):
 
 ### structures
 
-spans = [5,6,7,8,9]
+spans = [9,10]
 l2ds = [10,12.5,15,17.5,20]
 gammas = [0.1,0.5,1,2,5,10]
+
+# spans = [5,6,7,8,9,10]
+# l2ds = [10,12.5,15,17.5,20]
+# gammas = [0.1,0.5,1,2,5,10]
 
 ### parameters often changed
 n_modes = 50  # number of modes used shall not exceed that extracted from abaqus modal analysis
@@ -79,7 +83,7 @@ for span in spans:
             mdl = Structure(
                 name='mdl_span' + str(span).replace('.', '_') + '_l2d' + str(l2d).replace('.', '_') + '_gamma' + str(
                     gamma).replace('.', '_'), path=os.path.dirname(os.path.abspath(__file__)))
-            file_obj = 'D:/Master_Thesis/modal/modal_span_depth_thickness/' + mdl.name + '.obj'
+            file_obj = 'C:/Users/Hao/Desktop/Master_Thesis/modal/modal_span_depth_thickness/' + mdl.name + '.obj'
             mdl = Structure.load_from_obj(file_obj)
             f_n = np.array(mdl.results['step_modal']['frequencies'])
             m_n = np.array(mdl.results['step_modal']['masses'])
@@ -236,7 +240,7 @@ for span in spans:
             # axes2.plot([1, n_modes + 1], [0, 0], '--', color=[0.7, 0.7, 0.7])
 
             ## save important variables
-            with open ('D:/Master_Thesis/code_data/footfall_analysis/data/data_mdl_0_4m/data_'+mdl.name+'.pkl','wb') as data:
+            with open('C:/Users/Hao/Desktop/Master_Thesis/code_data/footfall_analysis/data/data_mdl_0_4m/data_' + mdl.name + '.pkl','wb') as data:
                 pickle.dump([f_n,m_n,node_lp,n_modes,dt,t,dis_modes_lp,vel_modes_lp,acc_modes_lp,acc_modes_lp_weight,rms_modes,rms_modes_weight,R,R_weight,Gamma_n],data)
 
             stop_mdl = timeit.default_timer()
