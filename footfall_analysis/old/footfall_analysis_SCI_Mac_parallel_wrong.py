@@ -127,6 +127,7 @@ def solve_ODE(span, l2d, gamma):
         dis_modal += dis_mode
         vel_modal += vel_mode
         acc_modal += acc_mode
+
         # calculate acc-rms from sum till nth mode
         for j in range(T_rms, n):
             rms_acc_modal[j] = np.sqrt(np.mean(acc_modal[node_lp, j - T_rms:j] ** 2))
@@ -165,7 +166,7 @@ def solve_ODE(span, l2d, gamma):
     # axes.plot(t, F, '-', color=[1, 0, 0])
     # axes.plot([0, te], [W, W], ':', color=[0.7, 0.7, 0.7])
 
-    # # plot response
+    # plot response
     # fig = plt.figure()
     # fig.suptitle(
     #     'Footfall Response with Modal Analysis (span=' + str(span) + 'm, l/d=' + str(l2d) + ', gamma='+str(gamma)+', dt=' + str(
@@ -223,23 +224,22 @@ def solve_ODE(span, l2d, gamma):
     # axes2.plot([1, n_modes + 1], [0, 0], '--', color=[0.7, 0.7, 0.7])
 
     ### save important variables
-    with open ('D:/Master_Thesis/code_data/footfall_analysis/data/data_mdl_0_4m/data_'+mdl.name+'.pkl','wb') as data:
-        pickle.dump([W,te,t,F,f_n,m_n,node_lp,n_modes,dt,dis_modal[node_lp],acc_modal[node_lp],rms_modal,rms_modal_weight,dis_modal_1[node_lp],acc_modal_1[node_lp],rms_modal_1,rms_modal_weight_1,rms_acc_modal,rms_modes,rms_modes_weight,rms_acc_modes,R,R_weight,R_acc,Gamma_n],data)
+    # with open ('D:/Master_Thesis/code_data/footfall_analysis/data/data_mdl_0_4m/data_'+mdl.name+'.pkl','wb') as data:
+    #     pickle.dump([W,te,t,F,f_n,m_n,node_lp,n_modes,dt,dis_modal[node_lp],acc_modal[node_lp],rms_modal,rms_modal_weight,dis_modal_1[node_lp],acc_modal_1[node_lp],rms_modal_1,rms_modal_weight_1,rms_acc_modal,rms_modes,rms_modes_weight,rms_acc_modes,R,R_weight,R_acc,Gamma_n],data)
 
     stop_mdl = timeit.default_timer()
 
     print('Time for solving ' + str(n_modes) + ' modes of ' + mdl.name + ': ' + str(stop_mdl - start_mdl) + 's')
 
+
 ### structures
 
-start_mdls = timeit.default_timer()
-
-spans = [10]
-l2ds = [15]
-gammas = [0.5,1]
+spans = [5]
+l2ds = [20]
+gammas = [1]
 
 ### parameters often changed
-n_modes = 50  # number of modes used shall not exceed that extracted from abaqus modal analysis
+n_modes = 1  # number of modes used shall not exceed that extracted from abaqus modal analysis
 dt = 0.0005  # s
 t_cut = 0
 
@@ -272,12 +272,8 @@ num_cores = multiprocessing.cpu_count()
 
 Parallel(n_jobs=1)(delayed(solve_ODE)(span,l2d,gamma) for span in spans for l2d in l2ds for gamma in gammas)
 
-stop_mdls = timeit.default_timer()
 
-print('Time for solving: ' + str(stop_mdls - start_mdls) + 's')
-
-
-# plt.show()
+plt.show()
 
 
 
