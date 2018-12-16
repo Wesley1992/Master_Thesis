@@ -71,6 +71,8 @@ acc_base = 0.005
 for span in spans:
     for l2d in l2ds:
 
+        start_mdl = timeit.default_timer()
+
         # Input obj file
         mdl = Structure(name='mdl_plate_span'+str(span).replace('.','_')+'_l2d'+str(l2d).replace('.','_'), path=os.path.dirname(os.path.abspath(__file__)))
         file_obj = 'D:/Master_Thesis/modal/modal_plate_span_0_4depth/'+mdl.name+'.obj'
@@ -96,37 +98,27 @@ for span in spans:
         uz_ms = np.array(uz_ms)
 
         # ODE solving and rms calculation
-        start = timeit.default_timer()
-
         dis_mode = np.zeros((n_nodes, n))
         vel_mode = np.zeros((n_nodes, n))
         acc_mode = np.zeros((n_nodes, n))
-        rms_mode = np.zeros(n)
-        rms_mode_weight = np.zeros(n)
-        rms_modes = np.zeros(n_modes)
-        rms_modes_weight = np.zeros(n_modes)
 
-        dis_modal = np.zeros((n_nodes, n))
-        vel_modal = np.zeros((n_nodes, n))
-        acc_modal = np.zeros((n_nodes, n))
-        rms_modal = np.zeros(n)  # only for load point, rms from superposition of weighted mode rms
-        rms_modal_weight = np.zeros(n)
+        dis = np.zeros((n_nodes, n))
+        vel = np.zeros((n_nodes, n))
+        acc = np.zeros((n_nodes, n))
 
-        # response from the first mode
-        dis_modal_1 = np.zeros((n_nodes, n))
-        vel_modal_1 = np.zeros((n_nodes, n))
-        acc_modal_1 = np.zeros((n_nodes, n))
-        rms_modal_1 = np.zeros(n)  # only for load point, rms from superposition of weighted mode rms
-        rms_modal_weight_1 = np.zeros(n)
+        acc_weight = np.zeros((n_nodes, n))
 
-        rms_acc_modal = np.zeros(n)
-        rms_acc_modes = np.zeros(n_modes)
+        dis_modes_lp = np.zeros((n_modes, n))
+        vel_modes_lp = np.zeros((n_modes, n))
+        acc_modes_lp = np.zeros((n_modes, n))
+        acc_modes_lp_weight = np.zeros((n_modes, n))
+
+        rms_modes = np.zeros((n_modes, n))
+        rms_modes_weight = np.zeros((n_modes, n))
 
         R = np.zeros(n_modes)
         R_weight = np.zeros(n_modes)
-        R_acc = np.zeros(n_modes)
 
-        # modal participation factor
         Gamma_n = np.zeros(n_modes)
 
         for i in range(n_modes):
@@ -146,40 +138,25 @@ for span in spans:
             for j in range(n_nodes):
                 acc_mode[j, int(t_cut / dt):] = np.gradient(vel_mode[j, int(t_cut / dt):], dt)
 
-            # calculate rms in each mode
+            dis += dis_mode
+            vel += vel_mode
+            acc += acc_mode
+            acc_weight += acc_mode * Wb(f_n[i])
+
+            dis_modes_lp[i, :] = dis[node_lp, :]
+            vel_modes_lp[i, :] = vel[node_lp, :]
+            acc_modes_lp[i, :] = acc[node_lp, :]
+            acc_modes_lp_weight[i, :] = acc_weight[node_lp, :]
+
             for j in range(T_rms, n):
-                rms_mode[j] = np.sqrt(np.mean(acc_mode[node_lp, j - T_rms:j] ** 2))
-            rms_mode_weight[:] = rms_mode[:] * Wb(f_n[i])
+                rms_modes[i, j] = np.sqrt(np.mean(acc_modes_lp[i, j - T_rms:j] ** 2))
+                rms_modes_weight[i, j] = np.sqrt(np.mean(acc_modes_lp_weight[i, j - T_rms:j] ** 2))
 
-            # superpose the responses
-            dis_modal += dis_mode
-            vel_modal += vel_mode
-            acc_modal += acc_mode
-            # calculate acc-rms from sum till nth mode
-            for j in range(T_rms, n):
-                rms_acc_modal[j] = np.sqrt(np.mean(acc_modal[node_lp, j - T_rms:j] ** 2))
-
-            rms_modal += rms_mode
-            rms_modal_weight += rms_mode_weight
-
-            rms_modes[i] = np.max(rms_modal)
-            rms_modes_weight[i] = np.max(rms_modal_weight)
-            rms_acc_modes[i] = np.max(rms_acc_modal)
-
-            R[i] = rms_modes[i] / acc_base
-            R_weight[i] = rms_modes_weight[i] / acc_base
-            R_acc[i] = rms_acc_modes[i] / acc_base
-
-            if i == 0:
-                dis_modal_1[:] = dis_modal[:]
-                vel_modal_1[:] = vel_modal[:]
-                acc_modal_1[:] = acc_modal[:]
-                rms_modal_1[:] = rms_modal[:]  # only for load point, rms from superposition of weighted mode rms
-                rms_modal_weight_1[:] = rms_modal_weight[:]
+            R[i] = np.max(rms_modes[i, :]) / acc_base
+            R_weight[i] = np.max(rms_modes_weight[i, :]) / acc_base
 
             print('ODE: mode', str(i + 1))
 
-        stop = timeit.default_timer()
 
         ### plot
 
@@ -194,68 +171,71 @@ for span in spans:
         # axes.plot([0, te], [W, W], ':', color=[0.7, 0.7, 0.7])
 
         # # plot response
-        fig = plt.figure()
-        fig.suptitle('Footfall Response with Modal Analysis (span=' + str(span) + 'm, l/d=' + str(l2d) + ', dt=' + str(
-            dt) + ', ' + str(n_modes) + ' modes)')
-        axes1 = fig.add_subplot(311)
-        axes1.set_xlabel('Time $t$ [s]', fontsize=12)
-        axes1.set_ylabel('Displacement $u$ [mm]', fontsize=12)
-        axes1.minorticks_on()
-        axes1.plot(t, np.transpose(dis_modal[node_lp, :]), color='r')
-        axes1.plot(t, np.transpose(dis_modal_1[node_lp, :]), '--', color='r')
-        axes1.legend([str(n_modes) + ' modes', 'first mode'])
-
-        axes2 = fig.add_subplot(312)
-        axes2.set_xlabel('Time $t$ [s]', fontsize=12)
-        axes2.set_ylabel('Acceleration $a$ [$m/s^2$]', fontsize=12)
-        axes2.minorticks_on()
-        axes2.plot(t, np.transpose(acc_modal[node_lp, :]), 'r')
-        axes2.plot(t, np.transpose(acc_modal_1[node_lp, :]), '--', color='r')
-        axes2.plot([0, t[-1]], [0, 0], '--', color=[0.7, 0.7, 0.7])
-        axes2.legend([str(n_modes) + ' modes', 'first mode'])
-
-        axes3 = fig.add_subplot(313)
-        axes3.set_xlabel('Time $t$ [s]', fontsize=12)
-        axes3.set_ylabel('Acceleration (RMS) $a_\mathrm{rms}$ [$m/s^2$]', fontsize=12)
-        axes3.minorticks_on()
-        axes3.plot(t, rms_modal, color='r')
-        axes3.plot(t, rms_modal_1, '--', color='r')
-        axes3.plot(t, rms_modal_weight, color='b')
-        axes3.plot(t, rms_modal_weight_1, '--', color='b')
-        axes3.legend(['50 modes not weighted', 'first mode not weighted', '50 modes weighted', 'first mode weighted'])
-        axes3.plot([0, t[-1]], [0, 0], '--', color=[0.7, 0.7, 0.7])
-
-        # plot response factor in relation to number of modes involved
-        fig = plt.figure()
-        axes = fig.add_subplot(111)
-        axes.set_title('Rsponse factor in relation to number of modes involved (span=' + str(span) + 'm, l/d=' + str(
-            l2d) + ', dt=' + str(dt) + ')', fontsize=12)
-        axes.set_xlabel('Number of modes involved in modal analysis', fontsize=12)
-        axes.set_ylabel('Response Factor', fontsize=12)
-        axes.minorticks_on()
-        axes.plot(range(1, n_modes + 1), R, 'r')
-        axes.plot(range(1, n_modes + 1), R_weight, 'b')
-        axes.set_ylim(ymin=0)
-        axes.set_xlim(xmin=0)
-        axes.legend(['not weighted response factor', 'weighted response factor'], loc=2)
-        # plot participation factor
-        axes2 = axes.twinx()
-        axes2.set_ylabel('Participation factor [-]', fontsize=12)
-        axes2.tick_params('y')
-        axes2.minorticks_on()
-        axes2.bar(range(1, n_modes + 1), Gamma_n, width=0.2, color='m')
-        axes2.legend(['participation factor'], loc=1)
-        axes2.plot([1, n_modes + 1], [0, 0], '--', color=[0.7, 0.7, 0.7])
+        # fig = plt.figure()
+        # fig.suptitle('Footfall Response with Modal Analysis (span=' + str(span) + 'm, l/d=' + str(l2d) + ', dt=' + str(
+        #     dt) + ', ' + str(n_modes) + ' modes)')
+        # axes1 = fig.add_subplot(311)
+        # axes1.set_xlabel('Time $t$ [s]', fontsize=12)
+        # axes1.set_ylabel('Displacement $u$ [mm]', fontsize=12)
+        # axes1.minorticks_on()
+        # axes1.plot(t, np.transpose(dis_modal[node_lp, :]), color='r')
+        # axes1.plot(t, np.transpose(dis_modal_1[node_lp, :]), '--', color='r')
+        # axes1.legend([str(n_modes) + ' modes', 'first mode'])
+        #
+        # axes2 = fig.add_subplot(312)
+        # axes2.set_xlabel('Time $t$ [s]', fontsize=12)
+        # axes2.set_ylabel('Acceleration $a$ [$m/s^2$]', fontsize=12)
+        # axes2.minorticks_on()
+        # axes2.plot(t, np.transpose(acc_modal[node_lp, :]), 'r')
+        # axes2.plot(t, np.transpose(acc_modal_1[node_lp, :]), '--', color='r')
+        # axes2.plot([0, t[-1]], [0, 0], '--', color=[0.7, 0.7, 0.7])
+        # axes2.legend([str(n_modes) + ' modes', 'first mode'])
+        #
+        # axes3 = fig.add_subplot(313)
+        # axes3.set_xlabel('Time $t$ [s]', fontsize=12)
+        # axes3.set_ylabel('Acceleration (RMS) $a_\mathrm{rms}$ [$m/s^2$]', fontsize=12)
+        # axes3.minorticks_on()
+        # axes3.plot(t, rms_modal, color='r')
+        # axes3.plot(t, rms_modal_1, '--', color='r')
+        # axes3.plot(t, rms_modal_weight, color='b')
+        # axes3.plot(t, rms_modal_weight_1, '--', color='b')
+        # axes3.legend(['50 modes not weighted', 'first mode not weighted', '50 modes weighted', 'first mode weighted'])
+        # axes3.plot([0, t[-1]], [0, 0], '--', color=[0.7, 0.7, 0.7])
+        #
+        # # plot response factor in relation to number of modes involved
+        # fig = plt.figure()
+        # axes = fig.add_subplot(111)
+        # axes.set_title('Rsponse factor in relation to number of modes involved (span=' + str(span) + 'm, l/d=' + str(
+        #     l2d) + ', dt=' + str(dt) + ')', fontsize=12)
+        # axes.set_xlabel('Number of modes involved in modal analysis', fontsize=12)
+        # axes.set_ylabel('Response Factor', fontsize=12)
+        # axes.minorticks_on()
+        # axes.plot(range(1, n_modes + 1), R, 'r')
+        # axes.plot(range(1, n_modes + 1), R_weight, 'b')
+        # axes.set_ylim(ymin=0)
+        # axes.set_xlim(xmin=0)
+        # axes.legend(['not weighted response factor', 'weighted response factor'], loc=2)
+        # # plot participation factor
+        # axes2 = axes.twinx()
+        # axes2.set_ylabel('Participation factor [-]', fontsize=12)
+        # axes2.tick_params('y')
+        # axes2.minorticks_on()
+        # axes2.bar(range(1, n_modes + 1), Gamma_n, width=0.2, color='m')
+        # axes2.legend(['participation factor'], loc=1)
+        # axes2.plot([1, n_modes + 1], [0, 0], '--', color=[0.7, 0.7, 0.7])
 
         ### save important variables
         with open('D:/Master_Thesis/code_data/footfall_analysis_plate_0_4depth/data/data_' + mdl.name + '.pkl',
                   'wb') as data:
-            pickle.dump([W, te, t, F, f_n, m_n, node_lp, n_modes, dt, dis_modal[node_lp], acc_modal[node_lp], rms_modal,
-                         rms_modal_weight, dis_modal_1[node_lp], acc_modal_1[node_lp], rms_modal_1, rms_modal_weight_1,
-                         rms_acc_modal, rms_modes, rms_modes_weight, rms_acc_modes, R, R_weight, R_acc, Gamma_n], data)
-        print('Time for solving ' + str(n_modes) + ' modes of ' + mdl.name + ': ' + str(stop - start) + 's')
+            pickle.dump(
+                [f_n, m_n, node_lp, n_modes, dt, t, dis_modes_lp, vel_modes_lp, acc_modes_lp, acc_modes_lp_weight,
+                 rms_modes, rms_modes_weight, R, R_weight, Gamma_n], data)
 
-plt.show()
+        stop_mdl = timeit.default_timer()
+
+        print('Time for solving ' + str(n_modes) + ' modes of ' + mdl.name + ': ' + str(stop_mdl - start_mdl) + 's')
+
+# plt.show()
 
 # plt.show(block=False)
 

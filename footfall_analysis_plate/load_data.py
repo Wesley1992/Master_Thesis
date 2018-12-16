@@ -4,19 +4,20 @@ import numpy as np
 
 # input for loading file
 
-spans = [5,8,10]
-l2ds = [10,15,20]
+spans = [10]
+l2ds = [20]
 # gammas = [0.1,1,10]
 
 for span in spans:
     for l2d in l2ds:
         # for gamma in gammas:
             # file_name='D:/Master_Thesis/footfall_analysis/data/data_mdl_t0_01span/data_mdl_span'+str(span).replace('.','_')+'_l2d'+str(l2d).replace('.','_')+'_gamma'+str(gamma).replace('.','_')+'.pkl'
-        file_name = 'D:/Master_Thesis/footfall_analysis_plate/data_mdl_plate_span' + str(span).replace('.','_') + '_l2d' + str(l2d).replace('.', '_') + '.pkl'
+        file_name = 'D:/Master_Thesis/code_data/footfall_analysis_plate/data/data_mdl_plate_span' + str(span).replace('.','_') + '_l2d' + str(l2d).replace('.', '_') + '.pkl'
 
-        [W, te, t, F, f_n, m_n, node_lp, n_modes, dt, dis_modal, acc_modal, rms_modal,rms_modal_weight, rms_acc_modal, rms_modes, rms_modes_weight, rms_acc_modes, R, R_weight, R_acc]=pickle.load(open(file_name,'rb'))
+        [W, te, t, F, f_n, m_n, node_lp, n_modes, dt, dis_modal, acc_modal, rms_modal,
+                         rms_modal_weight, dis_modal_1, acc_modal_1, rms_modal_1, rms_modal_weight_1,
+                         rms_acc_modal, rms_modes, rms_modes_weight, rms_acc_modes, R, R_weight, R_acc, Gamma_n]=pickle.load(open(file_name,'rb'))
 
-        print(R_weight[0]/R_weight[-1])
 ### plot
 
 # # plot footfall loading
