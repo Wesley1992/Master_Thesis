@@ -34,14 +34,14 @@ def Wb(f):
     return Wb
 
 ### structures
-spans = [10]
-l2ds = [10]
-gammas = [2]
+# spans = [10]
+# l2ds = [10]
+# gammas = [2]
 
 
-# spans = [5,6,7,8,9]
-# l2ds = [10,12.5,15,17.5,20]
-# gammas = [0.1,0.5,1,2,5,10]
+spans = [5,6,7,8,9]
+l2ds = [10,12.5,15,17.5,20]
+gammas = [0.1,0.5,1,2,5,10]
 
 ### parameters often changed
 n_modes = 50 # number of modes used shall not exceed that extracted from abaqus modal analysis

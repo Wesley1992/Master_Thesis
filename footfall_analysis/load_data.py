@@ -5,7 +5,7 @@ import numpy as np
 # input for loading file
 spans = [5]
 l2ds = [20]
-gammas = [0.1,1,10]
+gammas = [5]
 
 # spans = [5,6,7,8,9,10]
 # l2ds = [10,12.5,15,17.5,20]
@@ -17,6 +17,11 @@ for span in spans:
             file_name='D:/Master_Thesis/code_data/footfall_analysis/data/data_mdl_0_4m/data_mdl_span'+str(span).replace('.','_')+'_l2d'+str(l2d).replace('.','_')+'_gamma'+str(gamma).replace('.','_')+'.pkl'
 
             f_n, m_n, node_lp, n_modes, dt, t, dis_modes_lp, vel_modes_lp, acc_modes_lp, acc_modes_lp_weight, rms_modes,rms_modes_weight, R, R_weight, Gamma_n = pickle.load(open(file_name,'rb'))
+
+            print('f1: ',f_n[0])
+            print('m1: ', m_n[0])
+            print('m1/m: ', m_n[0]/(span**3/l2d*2400*0.4))
+            print('R: ',R_weight[-1],'\n')
 
             ### plot
 
@@ -68,32 +73,32 @@ for span in spans:
             # axes3.plot([0, t[-1]], [0, 0], '--', color=[0.7, 0.7, 0.7])
 
             ### plot response factor in relation to number of modes involved
-            fig = plt.figure()
-            axes = fig.add_subplot(111)
-            axes.set_title(
-                'Rsponse factor in relation to number of modes involved (span=' + str(span) + 'm, l/d=' + str(
-                    l2d) + ', gamma=' + str(gamma) + ', dt=' + str(
-                    dt) + ', ' + str(n_modes) + ' modes)', fontsize=12)
-            axes.set_xlabel('Number of modes involved in modal analysis', fontsize=12)
-            axes.set_ylabel('Response Factor', fontsize=12)
-            axes.set_xticks(range(1, n_modes + 1))
-            axes.minorticks_on()
-            axes.tick_params(axis='x', which='minor', bottom=False)
-            axes.plot(range(1, n_modes + 1), R, 'r')
-            axes.plot(range(1, n_modes + 1), R_weight, 'b')
-            axes.set_ylim(ymin=0)
-            axes.set_xlim(xmin=0)
-            axes.legend(['not weighted response factor', 'weighted response factor'], loc=2)
-
-            # plot participation factor
-            axes2 = axes.twinx()
-            axes2.set_ylabel('Participation factor [-]', fontsize=12)
-            axes2.tick_params('y')
-            axes2.minorticks_on()
-            axes2.tick_params(axis='x', which='minor', bottom=False)
-            axes2.bar(range(1, n_modes + 1), Gamma_n, width=0.2, color='m')
-            axes2.legend(['participation factor'], loc=1)
-            axes2.plot([1, n_modes + 1], [0, 0], '--', color=[0.7, 0.7, 0.7])
+            # fig = plt.figure()
+            # axes = fig.add_subplot(111)
+            # axes.set_title(
+            #     'Rsponse factor in relation to number of modes involved (span=' + str(span) + 'm, l/d=' + str(
+            #         l2d) + ', gamma=' + str(gamma) + ', dt=' + str(
+            #         dt) + ', ' + str(n_modes) + ' modes)', fontsize=12)
+            # axes.set_xlabel('Number of modes involved in modal analysis', fontsize=12)
+            # axes.set_ylabel('Response Factor', fontsize=12)
+            # axes.set_xticks(range(1, n_modes + 1))
+            # axes.minorticks_on()
+            # axes.tick_params(axis='x', which='minor', bottom=False)
+            # axes.plot(range(1, n_modes + 1), R, 'r')
+            # axes.plot(range(1, n_modes + 1), R_weight, 'b')
+            # axes.set_ylim(ymin=0)
+            # axes.set_xlim(xmin=0)
+            # axes.legend(['not weighted response factor', 'weighted response factor'], loc=2)
+            #
+            # # plot participation factor
+            # axes2 = axes.twinx()
+            # axes2.set_ylabel('Participation factor [-]', fontsize=12)
+            # axes2.tick_params('y')
+            # axes2.minorticks_on()
+            # axes2.tick_params(axis='x', which='minor', bottom=False)
+            # axes2.bar(range(1, n_modes + 1), Gamma_n, width=0.2, color='m')
+            # axes2.legend(['participation factor'], loc=1)
+            # axes2.plot([1, n_modes + 1], [0, 0], '--', color=[0.7, 0.7, 0.7])
 
 plt.show()
 
