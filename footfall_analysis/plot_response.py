@@ -511,10 +511,16 @@ m1_plate_m = np.reshape(np.array([m_n_plate_m[i][j][0] for i in range(len(spans)
 
 ### mass increase-normalized f1,m1,R1 by initial mass
 spans_opt = [5]
-l2ds_opt = [20]
-gammas_opt = [5]
+l2ds_opt = [10,15,20]
+gammas_opt = [0.1,1,10]
 
 mass_incs = [0.05,0.1,0.15,0.2,0.25,0.3]
+
+# spans_opt = [5]
+# l2ds_opt = [20]
+# gammas_opt = [5]
+#
+# mass_incs = [0.05,0.1,0.15,0.2,0.25,0.3]
 
 R_weight_opt = []
 R1_weight_opt = []
@@ -546,7 +552,7 @@ for i in range(len(spans_opt)):
                 m_n_opt[i][j][k].append([])
 
                 model_file = 'D:/Master_Thesis/code_data/footfall_analysis_optimization/data/data_mdl_span' + str(spans_opt[i]).replace('.', '_') + '_l2d' + str(l2ds_opt[j]).replace('.', '_') + '_gamma' + str(
-                        gammas_opt[k]).replace('.', '_')+'_massInc'+str(mass_incs[q]).replace('.','_')+'.pkl'
+                        gammas_opt[k]).replace('.', '_')+'_massInc'+str(mass_incs[q]).replace('.','_')+'_thickness_middle1.pkl'
 
                 R_weight_opt[i][j][k][q] = pickle.load(open(model_file,'rb'))[-2][-1]
                 R1_weight_opt[i][j][k][q] = pickle.load(open(model_file,'rb'))[-2][0]
@@ -567,12 +573,13 @@ markers = ['o','^','s','x','P','d']
 label_linestyle = ['$f_{1,optimized}/f_{1,initial}$','$m_{1,optimized}/m_{1,initial}$','$R_{1,optimized}/R_{1,initial}$']
 
 fig, ax = plt.subplots()
-ax.set_title('$f_1, m_1, R_1$ of optimized slab(span=5m) normalized by initial slab in relation to mass increase')
+ax.set_title('$f_1, m_1, R_1$ of optimized slab(span=5m) normalized by initial slab in relation to mass increase(thickness change,middle 1)')
 ax.set_xlabel('mass increase [%]')
-ax.set_xlim(xmin=mass_incs[0]*0.91,xmax=mass_incs[-1]*1.09)
+ax.set_xlim(xmin=-0.02*100,xmax=mass_incs[-1]*1.09*100)
 ax.set_ylabel('Relative values')
 ax.set_yscale('log')
-
+ax.grid(True)
+ax.grid(which='minor',axis='y',visible=True)
 
 for axis in [ax.yaxis]:
     formatter = ScalarFormatter()
@@ -586,15 +593,18 @@ for axis in [ax.yaxis]:
 i=0
 for j in range(len(l2ds_opt)):
     for k in range(len(gammas_opt)):
-        ax.plot(mass_incs,f1_opt[i,j,k,:]/f1[i,l2ds.index(l2ds_opt[j]),gammas.index(gammas_opt[k])],linestyle=line_styles[0],color=colors[j],marker=markers[k])
-        ax.plot(mass_incs,m1_opt[i,j,k,:]/m1[i,l2ds.index(l2ds_opt[j]),gammas.index(gammas_opt[k])],linestyle=line_styles[1],color=colors[j],marker=markers[k])
-        ax.plot(mass_incs,R1_weight_opt[i,j,k,:]/R1_weight[i,l2ds.index(l2ds_opt[j]),gammas.index(gammas_opt[k])],linestyle=line_styles[2],color=colors[j],marker=markers[k])
+        print(f1_opt[i,j,k,:])
+        print('\n')
+
+        ax.plot(100*np.array([0]+mass_incs),np.concatenate([[1],f1_opt[i,j,k,:]/f1[i,l2ds.index(l2ds_opt[j]),gammas.index(gammas_opt[k])]]),linestyle=line_styles[0],color=colors[j],marker=markers[k])
+        ax.plot(100*np.array([0]+mass_incs),np.concatenate([[1],m1_opt[i,j,k,:]/m1[i,l2ds.index(l2ds_opt[j]),gammas.index(gammas_opt[k])]]),linestyle=line_styles[1],color=colors[j],marker=markers[k])
+        ax.plot(100*np.array([0]+mass_incs),np.concatenate([[1],R1_weight_opt[i,j,k,:]/R1_weight[i,l2ds.index(l2ds_opt[j]),gammas.index(gammas_opt[k])]]),linestyle=line_styles[2],color=colors[j],marker=markers[k])
     # legend.append('span='+str(spans[i])+'m')
 
-ax.plot([mass_incs[0],mass_incs[-1]],[1,1],'--',color=[0.7,0.7,0.7])
+ax.plot([0]+[mass_incs[-1]],[1,1],'--',color=[0.7,0.7,0.7])
 
 legend_line=ax.legend(handles=[Line2D([0],[0],color=[0.4,0.4,0.4],lw=1,linestyle=line_styles[i],label=label_linestyle[i]) for i in range(len(label_linestyle))],loc='upper left',bbox_to_anchor=(0,1))
-legend_color=ax.legend(handles=[Line2D([0],[0],color=colors[i],lw=4,label='l/d='+str(l2ds_opt[i])) for i in range(len(l2ds_opt))],loc='upper left',bbox_to_anchor=(0,0.90))
+legend_color=ax.legend(handles=[Line2D([0],[0],color=colors[i],lw=4,label='l/d='+str(l2ds_opt[i])) for i in range(len(l2ds_opt))],loc='upper left',bbox_to_anchor=(0,0.875))
 legend_marker=ax.legend(handles=[Line2D([0],[0],color=[0.5,0.5,0.5],marker=markers[i],label='$t_v/t_r$='+str(gammas_opt[i])) for i in range(len(gammas_opt))],loc='upper left',bbox_to_anchor=(0,0.75))
 
 plt.gca().add_artist(legend_line)

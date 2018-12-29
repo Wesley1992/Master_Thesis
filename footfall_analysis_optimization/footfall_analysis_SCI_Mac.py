@@ -35,14 +35,14 @@ def Wb(f):
 
 ### structures
 spans = [5]
-l2ds = [20]
-gammas = [5]
+l2ds = [10,15,20]
+gammas = [0.1,1,10]
 
-mass_incs = [0.05,0.1,0.15,0.2,0.25,0.3]
-
+mass_incs = [0.05,0.15,0.25]
 
 ### parameters often changed
-n_modes = 50 # number of modes used shall not exceed that extracted from abaqus modal analysis
+n_modes = 1 # number of modes used shall not exceed that extracted from abaqus modal analysis
+te = 3  # time span for history analysis
 dt = 0.0005  # s
 t_cut = 0
 
@@ -51,7 +51,7 @@ W = -76 * 9.81    # load from walking people
 f_load = 2.0  # hz, frequency of walking
 ksi = 0.03  # -, damping ratio
 
-te = 1  # time span for history analysis
+
 n  = int(te / dt)+1
 t  = np.linspace(0, te, n)  # s
 a  = [0.436 * (1 * f_load - 0.95),
@@ -82,7 +82,7 @@ for span in spans:
                 # Input obj file
                 mdl = Structure(
                     name='mdl_span' + str(span).replace('.', '_') + '_l2d' + str(l2d).replace('.', '_') + '_gamma' + str(
-                        gamma).replace('.', '_')+'_massInc'+str(mass_inc).replace('.','_'), path=os.path.dirname(os.path.abspath(__file__)))
+                        gamma).replace('.', '_')+'_massInc'+str(mass_inc).replace('.','_')+'_thickness_middle1', path=os.path.dirname(os.path.abspath(__file__)))
                 file_obj = 'D:/Master_Thesis/modal/modal_span_depth_thickness_optimization/' + mdl.name + '.obj'
                 mdl = Structure.load_from_obj(file_obj)
                 f_n = np.array(mdl.results['step_modal']['frequencies'])
