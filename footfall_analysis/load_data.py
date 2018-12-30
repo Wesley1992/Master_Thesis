@@ -4,8 +4,8 @@ import numpy as np
 
 # input for loading file
 spans = [5]
-l2ds = [20]
-gammas = [5]
+l2ds = [10]
+gammas = [0.1]
 
 # spans = [5,6,7,8,9,10]
 # l2ds = [10,12.5,15,17.5,20]
@@ -18,10 +18,11 @@ for span in spans:
 
             f_n, m_n, node_lp, n_modes, dt, t, dis_modes_lp, vel_modes_lp, acc_modes_lp, acc_modes_lp_weight, rms_modes,rms_modes_weight, R, R_weight, Gamma_n = pickle.load(open(file_name,'rb'))
 
+            print('span='+str(span)+'m,l/d='+str(l2d)+',gamma='+str(gamma))
             print('f1: ',f_n[0])
             print('m1: ', m_n[0])
             print('m1/m: ', m_n[0]/(span**3/l2d*2400*0.4))
-            print('R: ',R_weight[-1],'\n')
+            print('R1: ',R_weight[0],'\n')
 
             ### plot
 
