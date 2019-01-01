@@ -229,12 +229,11 @@ def fn(ts):
     return R1_weight
 
 
-### data loading
+### data loading for reponse interpolation
 spans = [5,6,7,8,9,10]
 l2ds = [10,12.5,15,17.5,20]
 gammas = [0.1,0.5,1,2,5,10]
 
-### load file
 data_file = 'D:/Master_Thesis/code_data/footfall_analysis/data/other/data_m1_f1_R1.pkl'
 
 m1_data,f1_data,R1_weight_data = pickle.load(open(data_file,'rb'))
