@@ -35,12 +35,14 @@ def Wb(f):
         Wb = 16 / f
     return Wb
 
+
+# function to be evaluated and minimized (R1 in this case)
 def fn(ts):
 
     mdl = Structure.load_from_obj('D:/Master_Thesis/modal/modal_symmetric/mdl_span5_l2d10_gamma1_mesh_symmetric.obj', output=0)
     mdl.name = 'mdl_span5_l2d10_gamma1_mesh_symmetric_opt'
 
-    v0 = 5 ** 3 / 10 * 0.4 / 4  # span**3/l2d*ratio/4
+    v0 = 5 ** 3 / 10 * 0.4 / 4  # span**3/l2d*ratio/4, initial volume
     v  = 0
 
     for i in range(n_v):
@@ -92,12 +94,13 @@ def fn(ts):
     print('m1='+str(4*m1))
     print('f1='+str(f1))
 
-
+    # interpolate R1 based on m1 and f1 from existing data
     m1_f1_intp_grid_m1, m1_f1_intp_grid_f1 = np.meshgrid(4*m1, f1)
 
     R1_weight= griddata(np.vstack((m1_scatter, f1_scatter)).T, R1_weight_scatter,
                               (m1_f1_intp_grid_m1, m1_f1_intp_grid_f1), method='linear')
 
+    # if data not available, solve ODE
     if math.isnan(float(R1_weight)):
         print('out of interpolation range')
         start_ODE = timeit.default_timer()
@@ -241,9 +244,10 @@ f1_scatter = f1_data.reshape(len(spans)*len(l2ds)*len(gammas))
 R1_weight_scatter = R1_weight_data.reshape(len(spans)*len(l2ds)*len(gammas))
 
 ### thickness input
-n_v = 16
-n_r = 21
-n_r_h = 4
+# number of panels for each group
+n_v = 16    # vault
+n_r = 21    # ribs
+n_r_h = 4   # ribs with half thickness
 
 t_v = 0.01*ones(n_v)
 t_r = 0.2*ones(n_r)
@@ -252,7 +256,7 @@ ts = np.concatenate((t_v,t_r,t_r_h))
 
 start = timeit.default_timer()
 
-fn(ts)
+fn(ts)  # function for evaluation and minimization
 
 stop = timeit.default_timer()
 
