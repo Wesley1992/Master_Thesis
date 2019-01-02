@@ -104,25 +104,37 @@ def create_degreeIndex(M,p):
     index.insert(0,[0 for i in range(M)])
     return index
 
-def create_multiVarPoly(degree_index,xi):
-    # xi is the input of all variables at one position
+def create_multiVarPoly(degree_index,x,strategy):
+    # x is the input of all variables in one experimental design
     P = len(degree_index)
-    M = xi.shape[0]
-    poly = np.ones(P)
-    for i in range(P):
-        index = degree_index[i]
-        for j in range(M):
-            lgd_poly = create_legendrePoly(index[j],xi[j])[-1]
-            poly[i] *= lgd_poly
-    return poly
+    M = x.shape[0]
+    multi_poly = np.ones(P)
 
-def create_Psi(degree_index,xi_ED):
+    if strategy == 'legendre':
+        xi = x
+        for i in range(P):
+            index = degree_index[i]
+            for j in range(M):
+                uni_poly = create_legendrePoly(index[j],xi[j])[-1]
+                multi_poly[i] *= uni_poly
+
+    elif strategy == 'normal':
+        for i in range(P):
+            index = degree_index[i]
+            for j in range(M):
+                uni_poly = x[j]**index[j]
+                multi_poly[i] *= uni_poly
+
+    return multi_poly
+
+
+def create_Psi(degree_index,x_ED,strategy):
     # xi_ED(M,n)is the input of experimental design of all variables
-    n = xi_ED.shape[1]
+    n = x_ED.shape[1]
     P = len(degree_index)
     Psi = np.zeros((n,P))
     for i in range(n):
-        Psi[i] = create_multiVarPoly(degree_index,xi_ED[:,i])
+        Psi[i] = create_multiVarPoly(degree_index,x_ED[:,i],strategy)
     return Psi
 
 def Wb(f):
@@ -139,9 +151,6 @@ def Wb(f):
 def evaluate_response(ts):
 
     global n_v,n_r,n_r_h
-
-    print('response evaluation with input thickness ts=')
-    print(ts)
 
     ### data loading for reponse interpolation
     spans = [5, 6, 7, 8, 9, 10]
@@ -178,8 +187,6 @@ def evaluate_response(ts):
         a_r_h = mdl.areas['elset_ribs_{0}'.format(i + 1)]
         v += t_r_h * a_r_h
 
-    print('v0=' + str(v0))
-    print('v=' + str(v))
     scale = v0 / v
 
     ts_scaled = scale * ts
@@ -189,7 +196,7 @@ def evaluate_response(ts):
         mdl.sections['sec_vault_{0}'.format(i + 1)].geometry['t'] = t_v
 
     for i in range(n_r):
-        t_r = ts_scaled
+        t_r = ts_scaled[n_v+i]
         mdl.sections['sec_ribs_{0}'.format(i + 1)].geometry['t'] = t_r
 
     for i in range(n_r, n_r + n_r_h):

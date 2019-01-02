@@ -10,18 +10,7 @@ from math import factorial as fact
 from pyDOE2 import lhs
 import PCE_functions as fn
 import timeit
-
-### load data from global analysis
-spans = [5]
-l2ds = [10]
-gammas = [0.1,0.5,1,2,5,10]
-
-for span in spans:
-    for l2d in l2ds:
-        for gamma in gammas:
-            file_name='D:/Master_Thesis/code_data/footfall_analysis/data/data_mdl_0_4m/data_mdl_span'+str(span).replace('.','_')+'_l2d'+str(l2d).replace('.','_')+'_gamma'+str(gamma).replace('.','_')+'.pkl'
-
-            f_n, m_n, node_lp, n_modes, dt, t, dis_modes_lp, vel_modes_lp, acc_modes_lp, acc_modes_lp_weight, rms_modes,rms_modes_weight, R, R_weight, Gamma_n = pickle.load(open(file_name,'rb'))
+from sklearn.linear_model import LinearRegression
 
 ### load data from PCE
 M = 2
@@ -33,7 +22,7 @@ n_v = 16
 n_r = 21
 n_r_h = 4
 
-file_name = 'D:/Master_Thesis/code_data/footfall_analysis_optimization_PCE/data/M'+str(M)+'_p'+str(p)+'_k'+str(k)+'.pkl'
+file_name = 'D:/Master_Thesis/code_data/footfall_analysis_optimization_PCE/data/M'+str(M)+'_p'+str(p)+'_k'+str(k)+'_actualThickness.pkl'
 ts_ED,xi_ED,ts_scaled,Y_ED,Y_rec,y_alpha,Psi,index = pickle.load(open(file_name,'rb'))
 
 n = len(ts_scaled)
@@ -47,9 +36,7 @@ for i in range(n):
 
 ### generate more sampling points and calculate response with polynomials
 
-start = timeit.default_timer()
-
-k_new = 100
+k_new = 50
 n_new = int(k_new*fact(M+p)/(fact(M)*fact(p)))
 
 U_new = np.transpose(lhs(M,samples=n_new))
@@ -57,42 +44,51 @@ ts_ED_new =  bounds[0]+(bounds[1]-bounds[0])*U_new
 # t_vs_ED = ts_ED[0,:]
 # t_rs_ED = ts_ED[1,:]
 
-xi_ED_new = (2*ts_ED_new-(bounds[0]+bounds[1]))/(bounds[1]-bounds[0])
-
-Psi_new = fn.create_Psi(index,xi_ED_new)
-
-Y_rec_new = y_alpha @ np.transpose(Psi_new)
+# xi_ED_new = (2*ts_ED_new-(bounds[0]+bounds[1]))/(bounds[1]-bounds[0])
 
 ts_new = np.zeros((n_v+n_r+n_r_h,n_new))
 # TODO: not to differentiate between vault and ribs
 ts_new[:n_v] = ts_ED_new[0].copy()      # vault thickness
 ts_new[n_v:] = ts_ED_new[1].copy()      # ribs thickness
-
-ts_scaled_new = []
 areas = fn.get_areas()
-for i in range(n_new):
-    ts_scaled_new.append(fn.get_scaledThickness(areas,ts_new[:,i]))
-
-t_v_new = np.zeros(n_new)
-t_r_new = np.zeros(n_new)
+ts_ED_scaled_new = np.zeros((M,n_new))
+ts_scaled_new = []
 
 for i in range(n_new):
-    t_v_new[i] = ts_scaled_new[i][0]
-    t_r_new[i] = ts_scaled_new[i][n_v]
+    t_scaled_new = fn.get_scaledThickness(areas, ts_new[:, i])
+    ts_ED_scaled_new[0,i] = t_scaled_new[0]
+    ts_ED_scaled_new[1,i] = t_scaled_new[n_v]
 
-stop = timeit.default_timer()
+    ts_scaled_new.append(t_scaled_new)
 
-print('time for new data generation: '+str(stop-start)+' s')
+# regression from experimental design
+reg = LinearRegression()
+reg.fit(Psi,Y_ED)
+Y_rec = reg.predict(Psi)
+
+Psi_new = fn.create_Psi(index,ts_ED_scaled_new,'normal')
+
+Y_rec_new = reg.predict(Psi_new)
+
+print('Y_ED=')
+print(Y_ED)
+print('Y_rec=')
+print(Y_rec)
+print('Y_rec_new=')
+print(Y_rec_new)
+
+# Y_rec_new = y_alpha @ np.transpose(Psi_new)
 
 ### t_r,t_r - R1 plot
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
-ax.set_xlabel('xi_v_ED')
-ax.set_ylabel('xi_r_ED')
-ax.set_zlabel('R1')
-ax.scatter(xi_ED[0], xi_ED[1], Y_ED)
-ax.scatter(xi_ED[0], xi_ED[1], Y_rec)
-ax.scatter(xi_ED_new[0], xi_ED_new[1], Y_rec_new)
+ax.set_title('$t_v,t_r-R1$ plot (span=5m,l/d=10,M=2,p=2,k=2,uniform distribution sampling)')
+ax.set_xlabel('$t_v$ [m]')
+ax.set_ylabel('$t_r$ [m]')
+ax.set_zlabel('R1 [-]')
+ax.scatter(t_v, t_r, Y_ED, s=100)
+ax.scatter(t_v, t_r, Y_rec, s=100)
+ax.scatter(ts_ED_scaled_new[0], ts_ED_scaled_new[1], Y_rec_new)
 
 ax.legend(['experimental design (ED)','polynomial approximation (same sampling as ED)','polynomial approximation (different sampling from ED)'])
 

@@ -25,13 +25,13 @@ n_r_h = 4
 P = fact(M+p)/(fact(M)*fact(p))
 # total runs of experimental design (input number of each variable)
 n = int(k*P)
-n = 2
 # Latin Hypercube sampling (standard uniform distribution U([0,1]))
 U = np.transpose(lhs(M,samples=n))
 # transform standard uniform distribution to experimental design input: X = a+(b-a)U
-ts_ED =  bounds[0]+(bounds[1]-bounds[0])*U
+# ts_ED =  bounds[0]+(bounds[1]-bounds[0])*U
 
-ts_ED =
+ts_ED = np.array([[0.02,0.01,0.09,0.04,0.03,0.16,0.12,0.18,0.05,0.15,0.16,0.11],
+                 [0.2,0.1,0.18,0.08,0.03,0.16,0.06,0.09,0.01,0.03,0.016,0.011]])
 print('ts_ED=')
 print(ts_ED)
 # t_vs_ED = ts_ED[0,:]
@@ -75,6 +75,8 @@ for i in range(n):
 print('Y_ED=')
 print(Y_ED)
 
+print('Y_ED=')
+print(Y_ED)
 # calculate polynomial coefficients
 y_alpha = np.linalg.inv(np.transpose(Psi)@Psi)@np.transpose(Psi)@Y_ED
 print('y_alpha=')
@@ -85,5 +87,5 @@ Y_rec = y_alpha @ np.transpose(Psi)
 print('Y_rec=')
 print(Y_rec)
 
-# with open ('D:/Master_Thesis/code_data/footfall_analysis_optimization_PCE/data/M'+str(M)+'_p'+str(p)+'_k'+str(k)+'.pkl','wb') as data:
+# with open ('D:/Master_Thesis/code_data/footfall_analysis_optimization_PCE/data/M'+str(M)+'_p'+str(p)+'_k'+str(k)+'_ts_ED_given.pkl','wb') as data:
 #             pickle.dump([ts_ED,xi_ED,ts_scaled,Y_ED,Y_rec,y_alpha,Psi,index],data)
