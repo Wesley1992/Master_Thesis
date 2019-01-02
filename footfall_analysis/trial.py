@@ -1,41 +1,21 @@
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
 import numpy as np
-import itertools as it
-
-index = [1,1,0]
-print(list(it.permutations(index)))
-
-iter = it.permutations(index)
-print(type(iter))
-
-for item in iter:
-    print(item)
-# print(iter)
-# iter = list(set(iter))
-# print(iter)
-
-a=[1]
-a.insert(0,0)
-print(a)
+import matplotlib.tri as mtri
+import pandas as pd
+from scipy.interpolate import griddata
 
 
-a = np.append(np.array([1]),2)
-print(a)
-print(a[0])
+x = np.linspace(0,10,50)
+y = np.linspace(0,10,50)
+z = 2*np.sin(x)+np.cos(y)
 
-poly = np.ones(3)
-a=3
-poly[0] *= a
-a=4
-poly[0] *= a
-print(poly)
+grid_x, grid_y = np.mgrid[min(x):max(x):100j, min(y):max(y):100j]
+grid_z = griddata((x, y), z, (grid_x, grid_y), method='nearest')
 
-a=np.array([1,2])
-a[0] = 1.2
-print(type(a[0]))
-print(a)
+fig = plt.figure()
+ax = fig.gca(projection='3d')
 
-print(np.ones(3))
+ax.plot_surface(grid_x, grid_y, grid_z)
 
-b=np.array([1,2,3])
-c=b.copy()
-print(c)
+plt.show()

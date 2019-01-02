@@ -1,15 +1,8 @@
-from math import factorial as fact
-from pyDOE2 import *
 import numpy as np
-import matplotlib.pyplot as plt
 import itertools as it
 from sympy.utilities.iterables import multiset_permutations
 
 from compas_fea.structure import Structure
-
-from compas.numerical import devo_numpy
-
-from scipy.optimize import fmin_slsqp
 
 import pickle
 from scipy.interpolate import griddata
@@ -20,7 +13,11 @@ import os
 import glob
 import timeit
 
-def legendre_poly(p,x):
+n_v = 16
+n_r = 21
+n_r_h = 4
+
+def create_legendrePoly(p,x):
 
     """Construct Legendre polynomials
 
@@ -52,8 +49,7 @@ def legendre_poly(p,x):
 
     return lgd_poly
 
-
-def degree_index(M,p):
+def create_degreeIndex(M,p):
     """Construct degree index tuples indicating the degrees of univariate polynomials for multivariate polynomials basis by multiplication
 
     Parameters
@@ -108,26 +104,25 @@ def degree_index(M,p):
     index.insert(0,[0 for i in range(M)])
     return index
 
-
-def create_poly(degree_index,xi):
+def create_multiVarPoly(degree_index,xi):
     # xi is the input of all variables at one position
     P = len(degree_index)
+    M = xi.shape[0]
     poly = np.ones(P)
     for i in range(P):
         index = degree_index[i]
         for j in range(M):
-            lgd_poly = legendre_poly(index[j],xi[j])[-1]
+            lgd_poly = create_legendrePoly(index[j],xi[j])[-1]
             poly[i] *= lgd_poly
     return poly
 
-
 def create_Psi(degree_index,xi_ED):
     # xi_ED(M,n)is the input of experimental design of all variables
-    n = xi_ED.shape(1)
+    n = xi_ED.shape[1]
     P = len(degree_index)
-    Psi = np.zeros(n,P)
+    Psi = np.zeros((n,P))
     for i in range(n):
-        Psi[i] = create_poly(degree_index,xi_ED[:,i])
+        Psi[i] = create_multiVarPoly(degree_index,xi_ED[:,i])
     return Psi
 
 def Wb(f):
@@ -141,8 +136,9 @@ def Wb(f):
         Wb = 16 / f
     return Wb
 
-
 def evaluate_response(ts):
+
+    global n_v,n_r,n_r_h
 
     print('response evaluation with input thickness ts=')
     print(ts)
@@ -186,20 +182,22 @@ def evaluate_response(ts):
     print('v=' + str(v))
     scale = v0 / v
 
+    ts_scaled = scale * ts
+
     for i in range(n_v):
-        t_v = ts[i] * scale
+        t_v = ts_scaled[i]
         mdl.sections['sec_vault_{0}'.format(i + 1)].geometry['t'] = t_v
 
     for i in range(n_r):
-        t_r = ts[n_v + i] * scale
+        t_r = ts_scaled
         mdl.sections['sec_ribs_{0}'.format(i + 1)].geometry['t'] = t_r
 
     for i in range(n_r, n_r + n_r_h):
-        t_r_h = ts[n_v + i] / 2 * scale
+        t_r_h = ts_scaled[n_v + i] / 2
         mdl.sections['sec_ribs_{0}'.format(i + 1)].geometry['t'] = t_r_h
 
-    print('t_v=' + str(t_v))
-    print('t_r=' + str(t_r))
+    print('!!! t_v=' + str(t_v))
+    print('!!! t_r=' + str(t_r))
 
 
     file_abaqus = 'D:/Master_Thesis/modal/modal_symmetric/' + mdl.name
@@ -349,73 +347,47 @@ def evaluate_response(ts):
 
     print('R1=' + str(R1_weight))
 
-    return R1_weight
+    return R1_weight, ts_scaled
 
+def get_scaledThickness(areas,ts):
 
+    n_v, n_r, n_r_h
 
+    v0 = 5 ** 3 / 10 * 0.4 / 4  # span**3/l2d*ratio/4, initial volume
+    v = 0
 
-### define input parameters
-# number of input variables (model dimension), tv and tr for test
-M = 2
-# max total degree
-p = 2
-# oversampling rate
-k = 2
-# bounds for uniform distribution
-bounds = [0.01,0.2]
-# number of vault and rib panels
-n_v = 16
-n_r = 21
-n_r_h = 4
+    for i in range(n_v):
+        t_v = ts[i]
+        a_v = areas[i]
+        v += t_v * a_v
 
-# cardinality (number of coefficients)
-P = fact(M+p)/(fact(M)*fact(p))
-# total runs of experimental design (input number of each variable)
-n = k*P
-# Latin Hypercube sampling (standard uniform distribution U([0,1]))
-U = np.transpose(lhs(M,samples=int(n)))
-# transform standard uniform distribution to experimental design input: X = a+(b-a)U
-ts_ED =  bounds[0]+(bounds[1]-bounds[0])*U
-print('ts_ED=')
-print(ts_ED)
-# t_vs_ED = ts_ED[0,:]
-# t_rs_ED = ts_ED[1,:]
-# transform experimental design input to Legendre polynomials input U([-1,1])
-xi_ED = (2*ts_ED-(bounds[0]+bounds[1]))/(bounds[1]-bounds[0])
-print('xi_ED=')
-print(xi_ED)
+    for i in range(n_r):
+        t_r = ts[n_v + i]
+        a_r = areas[n_v+i]
+        v += t_r * a_r
 
-# obtain degree index
-index = degree_index(M,p)
-print('degree_index=')
-print(index)
+    for i in range(n_r, n_r + n_r_h):
+        t_r_h = ts[n_v + i] / 2
+        a_r_h = areas[n_v+i]
+        v += t_r_h * a_r_h
 
-# create Psi matrix
-Psi = create_Psi(index,xi_ED)
-print('Psi_matrix=')
-print(Psi)
+    scale = v0 / v
+    t_scaled = ts * scale
 
-# evaluate experimental design
-ts = np.zeros(n_v+n_r+n_r_h,n)
-ts[:n_v] = ts_ED[0].copy()      # vault thickness
-ts[n_v:] = ts_ED[1].copy()      # ribs thickness
-response = np.zeros(n)
-for i in range(n):
-    ts_input = ts[:,i]
-    print('evalutate the ' + str(i + 1) + 'th of ' + str(n) + ' experemental designs')
-    start = timeit.default_timer()
+    return t_scaled
 
-    response[i] = evaluate_response(ts_input)
+def get_areas():
+    mdl = Structure.load_from_obj('D:/Master_Thesis/modal/modal_symmetric/mdl_span5_l2d10_gamma1_mesh_symmetric.obj',
+                                  output=0)
+    global n_v,n_r,n_r_h
 
-    stop = timeit.default_timer()
+    areas = []
+    for i in range(n_v):
+        areas.append(mdl.areas['elset_vault_{0}'.format(i + 1)])
 
+    for i in range(n_r+n_r_h):
+        areas.append(mdl.areas['elset_ribs_{0}'.format(i + 1)])
 
-
-
-
-
-
-
-
+    return areas
 
 
