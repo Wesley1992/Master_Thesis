@@ -31,7 +31,7 @@ U = np.transpose(lhs(M,samples=n))
 # transform standard uniform distribution to experimental design input: X = a+(b-a)U
 ts_ED =  bounds[0]+(bounds[1]-bounds[0])*U
 
-ts_ED = 
+ts_ED =
 print('ts_ED=')
 print(ts_ED)
 # t_vs_ED = ts_ED[0,:]
