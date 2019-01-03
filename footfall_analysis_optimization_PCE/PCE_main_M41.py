@@ -34,6 +34,11 @@ for i in range(n):
     Y_ED[i],t_scaled = fn.evaluate_response(ts_samp[:,i])
     ts_scaled[:,i] = t_scaled
 
+    if i%10 == 9:
+        with open('D:/Master_Thesis/code_data/footfall_analysis_optimization_PCE/data/M' + str(M) + '_p' + str(
+                p) + '_k' + str(k) + '_temp_n'+str(i+1)+'pkl', 'wb') as data:
+            pickle.dump([Y_ED, ts_scaled], data)
+
     stop = timeit.default_timer()
     print('********** evaluation of the ' + str(i + 1) + 'th experimental design finished, time = '+str(stop-start)+' s\n')
 
