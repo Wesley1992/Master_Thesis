@@ -13,6 +13,8 @@ import os
 import glob
 import timeit
 from pyDOE2 import lhs
+import io
+import sys
 
 n_v = 16
 n_r = 21
@@ -152,19 +154,6 @@ def evaluate_response(ts):
 
     global n_v,n_r,n_r_h
 
-    ### data loading for reponse interpolation
-    spans = [5, 6, 7, 8, 9, 10]
-    l2ds = [10, 12.5, 15, 17.5, 20]
-    gammas = [0.1, 0.5, 1, 2, 5, 10]
-
-    data_file = 'D:/Master_Thesis/code_data/footfall_analysis/data/other/data_m1_f1_R1.pkl'
-
-    m1_data, f1_data, R1_weight_data = pickle.load(open(data_file, 'rb'))
-
-    m1_scatter = m1_data.reshape(len(spans) * len(l2ds) * len(gammas))
-    f1_scatter = f1_data.reshape(len(spans) * len(l2ds) * len(gammas))
-    R1_weight_scatter = R1_weight_data.reshape(len(spans) * len(l2ds) * len(gammas))
-
     mdl = Structure.load_from_obj('D:/Master_Thesis/modal/modal_symmetric/mdl_span5_l2d10_gamma1_mesh_symmetric.obj',
                                   output=0)
     mdl.name = 'mdl_span5_l2d10_gamma1_mesh_symmetric_opt'
@@ -202,153 +191,183 @@ def evaluate_response(ts):
     for i in range(n_r, n_r + n_r_h):
         t_r_h = ts_scaled[n_v + i] / 2
         mdl.sections['sec_ribs_{0}'.format(i + 1)].geometry['t'] = t_r_h
-    # !!! only for test
-    print('!!! t_v=' + str(t_v))
-    print('!!! t_r=' + str(t_r))
+    # # !!! only for test
+    # print('!!! t_v=' + str(t_v))
+    # print('!!! t_r=' + str(t_r))
+    print('ts_scaled=')
+    print(ts_scaled)
 
     file_abaqus = 'D:/Master_Thesis/modal/modal_symmetric/' + mdl.name
-
     if os.path.exists(file_abaqus):
         os.chdir(file_abaqus)
         for file in glob.glob("*.lck"):
             os.remove(file)
 
     print('abaqus starts modal analysis')
+
+    # monitor abaqus, if analysis failed, stop the process
+    backup = sys.stdout
+    sys.stdout = io.StringIO()
+
     mdl.analyse_and_extract(software='abaqus', fields=['u'], components=['uz'],output=0)
+
+    output = sys.stdout.getvalue()
+    sys.stdout.close()
+    sys.stdout = backup
+    print(output)
+    if 'fail' in output:
+        print('abaqus analysis failed')
+        exit()
 
     m1 = mdl.results['step_modal']['masses'][0]
     f1 = mdl.results['step_modal']['frequencies'][0]
     print('m1=' + str(4 * m1))
     print('f1=' + str(f1))
 
-    # interpolate R1 based on m1 and f1 from existing data
-    m1_f1_intp_grid_m1, m1_f1_intp_grid_f1 = np.meshgrid(4 * m1, f1)
+    ### reponse interpolation
+    # # load data
+    # spans = [5, 6, 7, 8, 9, 10]
+    # l2ds = [10, 12.5, 15, 17.5, 20]
+    # gammas = [0.1, 0.5, 1, 2, 5, 10]
+    #
+    # data_file = 'D:/Master_Thesis/code_data/footfall_analysis/data/other/data_m1_f1_R1.pkl'
+    #
+    # m1_data, f1_data, R1_weight_data = pickle.load(open(data_file, 'rb'))
+    #
+    # m1_scatter = m1_data.reshape(len(spans) * len(l2ds) * len(gammas))
+    # f1_scatter = f1_data.reshape(len(spans) * len(l2ds) * len(gammas))
+    # R1_weight_scatter = R1_weight_data.reshape(len(spans) * len(l2ds) * len(gammas))
+    #
+    # # interpolate R1 based on m1 and f1 from existing data
+    # m1_f1_intp_grid_m1, m1_f1_intp_grid_f1 = np.meshgrid(4 * m1, f1)
+    #
+    # R1_weight = griddata(np.vstack((m1_scatter, f1_scatter)).T, R1_weight_scatter,
+    #                      (m1_f1_intp_grid_m1, m1_f1_intp_grid_f1), method='linear')
 
-    R1_weight = griddata(np.vstack((m1_scatter, f1_scatter)).T, R1_weight_scatter,
-                         (m1_f1_intp_grid_m1, m1_f1_intp_grid_f1), method='linear')
+    # # if data not available, calculate response by solving ODE
+    # if math.isnan(float(R1_weight)):
+    #     print('response out of interpolation range, solving ODE')
 
-    # if data not available, calculate response by solving ODE
-    if math.isnan(float(R1_weight)):
-        print('response out of interpolation range, solving ODE')
-        start_ODE = timeit.default_timer()
+    print('solving ODE')
+    start_ODE = timeit.default_timer()
 
-        ### parameters often changed
-        n_modes = 1  # number of modes used shall not exceed that extracted from abaqus modal analysis
-        dt = 0.0005  # s
-        t_cut = 0
+    ### parameters often changed
+    n_modes = 1  # number of modes used shall not exceed that extracted from abaqus modal analysis
+    dt = 0.0005  # s
+    t_cut = 0
 
-        ### Loading
-        W = -76 * 9.81 / 4  # load from walking people
-        f_load = 2.0  # hz, frequency of walking
-        ksi = 0.03  # -, damping ratio
+    ### Loading
+    W = -76 * 9.81 / 4  # load from walking people
+    f_load = 2.0  # hz, frequency of walking
+    ksi = 0.03  # -, damping ratio
 
-        te = 1  # time span for history analysis
-        n = int(te / dt) + 1
-        t = np.linspace(0, te, n)  # s
-        a = [0.436 * (1 * f_load - 0.95),
-             0.006 * (2 * f_load + 12.3),
-             0.007 * (3 * f_load + 5.20),
-             0.007 * (4 * f_load + 2.00)]
-        p = [0, -0.5 * np.pi, np.pi, 0.5 * np.pi]
-        F = np.zeros(n) + W  # N
+    te = 1  # time span for history analysis
+    n = int(te / dt) + 1
+    t = np.linspace(0, te, n)  # s
+    a = [0.436 * (1 * f_load - 0.95),
+         0.006 * (2 * f_load + 12.3),
+         0.007 * (3 * f_load + 5.20),
+         0.007 * (4 * f_load + 2.00)]
+    p = [0, -0.5 * np.pi, np.pi, 0.5 * np.pi]
+    F = np.zeros(n) + W  # N
 
-        for i in range(len(a)):
-            F += W * a[i] * np.sin(2 * np.pi * (i + 1) * f_load * t + p[i])  # N
+    for i in range(len(a)):
+        F += W * a[i] * np.sin(2 * np.pi * (i + 1) * f_load * t + p[i])  # N
 
-        Fn = interp1d(t, F, fill_value="extrapolate")
+    Fn = interp1d(t, F, fill_value="extrapolate")
 
-        ### rms and response factor parameters
-        T_rms = int(1 / f_load // dt) + 2  # time period for calculating rms
-        acc_base = 0.005
+    ### rms and response factor parameters
+    T_rms = int(1 / f_load // dt) + 2  # time period for calculating rms
+    acc_base = 0.005
 
-        ### solving
-        # file_obj = 'D:/Master_Thesis/modal/modal_symmetric/mdl_span5_l2d10_gamma1_mesh_symmetric_opt.obj'
-        # mdl = Structure.load_from_obj(file_obj)
+    ### solving
+    # file_obj = 'D:/Master_Thesis/modal/modal_symmetric/mdl_span5_l2d10_gamma1_mesh_symmetric_opt.obj'
+    # mdl = Structure.load_from_obj(file_obj)
 
-        f_n = np.array(mdl.results['step_modal']['frequencies'])
-        m_n = np.array(mdl.results['step_modal']['masses'])
+    f_n = np.array(mdl.results['step_modal']['frequencies'])
+    m_n = np.array(mdl.results['step_modal']['masses'])
 
-        try:
-            node_lp = mdl.sets['nset_loadPoint']['selection']
-        except:
-            node_lp = mdl.sets['nset_loadPoint'].selection
+    try:
+        node_lp = mdl.sets['nset_loadPoint']['selection']
+    except:
+        node_lp = mdl.sets['nset_loadPoint'].selection
 
-        n_nodes = mdl.nodes.__len__()
-        s = np.zeros(n_nodes)  # spatial distribution of load
-        s[node_lp] = 1
+    n_nodes = mdl.nodes.__len__()
+    s = np.zeros(n_nodes)  # spatial distribution of load
+    s[node_lp] = 1
 
-        # extract mode shape
-        uz_ms = []  # mode shape z direction
+    # extract mode shape
+    uz_ms = []  # mode shape z direction
 
-        for i in range(n_modes):
-            uz_ms.append([])
-            for node in mdl.nodes:
-                uz_ms[i].append(mdl.results['step_modal']['nodal']['uz{0}'.format(i + 1)][node])
-        uz_ms = np.array(uz_ms)
+    for i in range(n_modes):
+        uz_ms.append([])
+        for node in mdl.nodes:
+            uz_ms[i].append(mdl.results['step_modal']['nodal']['uz{0}'.format(i + 1)][node])
+    uz_ms = np.array(uz_ms)
 
-        # ODE solving and rms calculation
+    # ODE solving and rms calculation
 
-        dis_mode = np.zeros((n_nodes, n))
-        vel_mode = np.zeros((n_nodes, n))
-        acc_mode = np.zeros((n_nodes, n))
+    dis_mode = np.zeros((n_nodes, n))
+    vel_mode = np.zeros((n_nodes, n))
+    acc_mode = np.zeros((n_nodes, n))
 
-        dis = np.zeros((n_nodes, n))
-        vel = np.zeros((n_nodes, n))
-        acc = np.zeros((n_nodes, n))
+    dis = np.zeros((n_nodes, n))
+    vel = np.zeros((n_nodes, n))
+    acc = np.zeros((n_nodes, n))
 
-        acc_weight = np.zeros((n_nodes, n))
+    acc_weight = np.zeros((n_nodes, n))
 
-        dis_modes_lp = np.zeros((n_modes, n))
-        vel_modes_lp = np.zeros((n_modes, n))
-        acc_modes_lp = np.zeros((n_modes, n))
-        acc_modes_lp_weight = np.zeros((n_modes, n))
+    dis_modes_lp = np.zeros((n_modes, n))
+    vel_modes_lp = np.zeros((n_modes, n))
+    acc_modes_lp = np.zeros((n_modes, n))
+    acc_modes_lp_weight = np.zeros((n_modes, n))
 
-        rms_modes = np.zeros((n_modes, n))
-        rms_modes_weight = np.zeros((n_modes, n))
+    rms_modes = np.zeros((n_modes, n))
+    rms_modes_weight = np.zeros((n_modes, n))
 
-        R = np.zeros(n_modes)
-        R_weight = np.zeros(n_modes)
+    R = np.zeros(n_modes)
+    R_weight = np.zeros(n_modes)
 
-        Gamma_n = np.zeros(n_modes)
+    Gamma_n = np.zeros(n_modes)
 
-        for i in range(n_modes):
-            # Solve with multi-DOF
-            def fn_modal(u, t, m, w, s, uz):
-                return [u[1], Fn(t) * s @ uz / m - u[0] * w ** 2 - 2 * ksi * w * u[1]]
+    for i in range(n_modes):
+        # Solve with multi-DOF
+        def fn_modal(u, t, m, w, s, uz):
+            return [u[1], Fn(t) * s @ uz / m - u[0] * w ** 2 - 2 * ksi * w * u[1]]
 
-            sol = odeint(fn_modal, [0, 0], t[:], args=(m_n[i], 2 * np.pi * f_n[i], s, uz_ms[i]))
+        sol = odeint(fn_modal, [0, 0], t[:], args=(m_n[i], 2 * np.pi * f_n[i], s, uz_ms[i]))
 
-            Gamma_n[i] = s @ uz_ms[i] / m_n[i]
+        Gamma_n[i] = s @ uz_ms[i] / m_n[i]
 
-            for j in range(n):
-                dis_mode[:, j] = sol[j, 0] * uz_ms[i] * 1000
-                vel_mode[:, j] = sol[j, 1] * uz_ms[i]
+        for j in range(n):
+            dis_mode[:, j] = sol[j, 0] * uz_ms[i] * 1000
+            vel_mode[:, j] = sol[j, 1] * uz_ms[i]
 
-            for j in range(n_nodes):
-                acc_mode[j, int(t_cut / dt):] = np.gradient(vel_mode[j, int(t_cut / dt):], dt)
+        for j in range(n_nodes):
+            acc_mode[j, int(t_cut / dt):] = np.gradient(vel_mode[j, int(t_cut / dt):], dt)
 
-            dis += dis_mode
-            vel += vel_mode
-            acc += acc_mode
-            acc_weight += acc_mode * Wb(f_n[i])
+        dis += dis_mode
+        vel += vel_mode
+        acc += acc_mode
+        acc_weight += acc_mode * Wb(f_n[i])
 
-            dis_modes_lp[i, :] = dis[node_lp, :]
-            vel_modes_lp[i, :] = vel[node_lp, :]
-            acc_modes_lp[i, :] = acc[node_lp, :]
-            acc_modes_lp_weight[i, :] = acc_weight[node_lp, :]
+        dis_modes_lp[i, :] = dis[node_lp, :]
+        vel_modes_lp[i, :] = vel[node_lp, :]
+        acc_modes_lp[i, :] = acc[node_lp, :]
+        acc_modes_lp_weight[i, :] = acc_weight[node_lp, :]
 
-            for j in range(T_rms, n):
-                rms_modes[i, j] = np.sqrt(np.mean(acc_modes_lp[i, j - T_rms:j] ** 2))
-                rms_modes_weight[i, j] = np.sqrt(np.mean(acc_modes_lp_weight[i, j - T_rms:j] ** 2))
+        for j in range(T_rms, n):
+            rms_modes[i, j] = np.sqrt(np.mean(acc_modes_lp[i, j - T_rms:j] ** 2))
+            rms_modes_weight[i, j] = np.sqrt(np.mean(acc_modes_lp_weight[i, j - T_rms:j] ** 2))
 
-            R[i] = np.max(rms_modes[i, :]) / acc_base
-            R_weight[i] = np.max(rms_modes_weight[i, :]) / acc_base
+        R[i] = np.max(rms_modes[i, :]) / acc_base
+        R_weight[i] = np.max(rms_modes_weight[i, :]) / acc_base
 
-            stop_ODE = timeit.default_timer()
+        stop_ODE = timeit.default_timer()
 
-            print('ODE solving of mode '+str(i + 1)+' finished, time = '+str(stop_ODE-start_ODE)+' s')
+        print('ODE solving of mode '+str(i + 1)+' finished, time = '+str(stop_ODE-start_ODE)+' s')
 
-        R1_weight = R_weight[0]
+    R1_weight = R_weight[0]
 
     print('R1=' + str(R1_weight))
 
@@ -394,7 +413,7 @@ def get_areas():
 
     return areas
 
-def sampling(strategy,bounds,M,n,base):
+def sampling(strategy,bounds,M,n):
     """generate samples
 
     Parameters
@@ -421,9 +440,11 @@ def sampling(strategy,bounds,M,n,base):
         samples = bounds[0]+(bounds[1]-bounds[0])*samples
 
     elif strategy == 'log_uniform':
-        samples = np.transpose(lhs(M, samples=n))
-        samples = bounds[0] + (bounds[1] - bounds[0]) * samples
-        samples = base*10**samples
+        bounds_log = np.log10(bounds)
+        samples = np.transpose(lhs(M-1, samples=n))
+        samples = bounds_log[0] + (bounds_log[1] - bounds_log[0]) * samples
+        samples = 10**samples
+        samples = np.vstack([np.ones(n),samples])
 
     return samples
 

@@ -1,6 +1,22 @@
-import numpy as np
+import io
+import sys
 
-t_scaled = np.array([0.14083211, 0.02816642])
-a = np.transpose([t_scaled])
-print(a)
-print(a.shape)
+backup = sys.stdout
+
+sys.stdout = io.StringIO()
+print('***** Analysis failed *****')
+output = sys.stdout.getvalue()
+sys.stdout.close()
+sys.stdout = backup
+
+print('1')
+print(output)
+
+if 'fails' in output:
+    print('failed')
+
+# sys.stdout = buffer = io.StringIO()
+# print('***** Analysis failed *****')
+# out = buffer.getvalue()
+# print('ssss')
+# print()
