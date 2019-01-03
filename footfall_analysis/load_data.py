@@ -5,7 +5,7 @@ import numpy as np
 # input for loading file
 spans = [5]
 l2ds = [10]
-gammas = [0.1]
+gammas = [10]
 
 # spans = [5,6,7,8,9,10]
 # l2ds = [10,12.5,15,17.5,20]

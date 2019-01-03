@@ -12,6 +12,7 @@ from scipy.interpolate import interp1d
 import os
 import glob
 import timeit
+from pyDOE2 import lhs
 
 n_v = 16
 n_r = 21
@@ -127,7 +128,6 @@ def create_multiVarPoly(degree_index,x,strategy):
 
     return multi_poly
 
-
 def create_Psi(degree_index,x_ED,strategy):
     # xi_ED(M,n)is the input of experimental design of all variables
     n = x_ED.shape[1]
@@ -202,10 +202,9 @@ def evaluate_response(ts):
     for i in range(n_r, n_r + n_r_h):
         t_r_h = ts_scaled[n_v + i] / 2
         mdl.sections['sec_ribs_{0}'.format(i + 1)].geometry['t'] = t_r_h
-
+    # !!! only for test
     print('!!! t_v=' + str(t_v))
     print('!!! t_r=' + str(t_r))
-
 
     file_abaqus = 'D:/Master_Thesis/modal/modal_symmetric/' + mdl.name
 
@@ -214,8 +213,8 @@ def evaluate_response(ts):
         for file in glob.glob("*.lck"):
             os.remove(file)
 
-    mdl.analyse_and_extract(software='abaqus', fields=['u'], components=['uz'])
-    # mdl.save_to_obj()
+    print('abaqus starts modal analysis')
+    mdl.analyse_and_extract(software='abaqus', fields=['u'], components=['uz'],output=0)
 
     m1 = mdl.results['step_modal']['masses'][0]
     f1 = mdl.results['step_modal']['frequencies'][0]
@@ -230,7 +229,7 @@ def evaluate_response(ts):
 
     # if data not available, calculate response by solving ODE
     if math.isnan(float(R1_weight)):
-        print('response out of interpolation range')
+        print('response out of interpolation range, solving ODE')
         start_ODE = timeit.default_timer()
 
         ### parameters often changed
@@ -345,10 +344,9 @@ def evaluate_response(ts):
             R[i] = np.max(rms_modes[i, :]) / acc_base
             R_weight[i] = np.max(rms_modes_weight[i, :]) / acc_base
 
-            print('ODE: mode', str(i + 1))
-
             stop_ODE = timeit.default_timer()
-            print('Time for solving mode ' + str(i + 1) + ': ' + str(stop_ODE - start_ODE) + 's')
+
+            print('ODE solving of mode '+str(i + 1)+' finished, time = '+str(stop_ODE-start_ODE)+' s')
 
         R1_weight = R_weight[0]
 
@@ -357,8 +355,7 @@ def evaluate_response(ts):
     return R1_weight, ts_scaled
 
 def get_scaledThickness(areas,ts):
-
-    n_v, n_r, n_r_h
+    # ts is the thickness of all variables for one experimental design
 
     v0 = 5 ** 3 / 10 * 0.4 / 4  # span**3/l2d*ratio/4, initial volume
     v = 0
@@ -396,5 +393,40 @@ def get_areas():
         areas.append(mdl.areas['elset_ribs_{0}'.format(i + 1)])
 
     return areas
+
+def sampling(strategy,bounds,M,n,base):
+    """generate samples
+
+    Parameters
+    ----------
+    strategy : str
+        dict{'lhs','uniform','log_uniform'}
+    bounds : float array
+    M : int
+        dimension of model
+    n : int
+        number of samples
+
+    Returns
+    -------
+    samples
+        an array of dimension M*n
+
+    """
+    if strategy == 'lhs':
+        samples = np.transpose(lhs(M,samples=n))
+
+    elif strategy == 'uniform':
+        samples = np.transpose(lhs(M, samples=n))
+        samples = bounds[0]+(bounds[1]-bounds[0])*samples
+
+    elif strategy == 'log_uniform':
+        samples = np.transpose(lhs(M, samples=n))
+        samples = bounds[0] + (bounds[1] - bounds[0]) * samples
+        samples = base*10**samples
+
+    return samples
+
+
 
 
