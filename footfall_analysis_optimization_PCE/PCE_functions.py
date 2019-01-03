@@ -1,7 +1,7 @@
 import numpy as np
 import itertools as it
 from sympy.utilities.iterables import multiset_permutations
-
+import matplotlib.pyplot as plt
 from compas_fea.structure import Structure
 
 import pickle
@@ -150,7 +150,7 @@ def Wb(f):
         Wb = 16 / f
     return Wb
 
-def evaluate_response(ts):
+def evaluate_response(ts,te=1,plot=False):
 
     global n_v,n_r,n_r_h
 
@@ -261,7 +261,7 @@ def evaluate_response(ts):
     f_load = 2.0  # hz, frequency of walking
     ksi = 0.03  # -, damping ratio
 
-    te = 1  # time span for history analysis
+    # te = 1  # time span for history analysis
     n = int(te / dt) + 1
     t = np.linspace(0, te, n)  # s
     a = [0.436 * (1 * f_load - 0.95),
@@ -368,8 +368,36 @@ def evaluate_response(ts):
         print('ODE solving of mode '+str(i + 1)+' finished, time = '+str(stop_ODE-start_ODE)+' s')
 
     R1_weight = R_weight[0]
-
     print('R1=' + str(R1_weight))
+
+    if plot == True:
+        fig = plt.figure()
+        fig.suptitle(
+            'Footfall Response with Modal Analysis (span=10m, l/d=10,optimized thickness, dt=' + str(
+                dt) + ', 1st mode')
+        axes1 = fig.add_subplot(311)
+        axes1.set_xlabel('Time $t$ [s]', fontsize=12)
+        axes1.set_ylabel('Displacement $u$ [mm]', fontsize=12)
+        axes1.minorticks_on()
+        axes1.plot(t, np.transpose(dis_modes_lp[0, :]), color='r')
+        axes1.plot([0, t[-1]], [0, 0], '--', color=[0.7, 0.7, 0.7])
+
+        axes2 = fig.add_subplot(312)
+        axes2.set_xlabel('Time $t$ [s]', fontsize=12)
+        axes2.set_ylabel('Acceleration $a$ [$m/s^2$]', fontsize=12)
+        axes2.minorticks_on()
+        axes2.plot(t, np.transpose(acc_modes_lp[0, :]), color='r')
+        axes2.plot([0, t[-1]], [0, 0], '--', color=[0.7, 0.7, 0.7])
+
+        axes3 = fig.add_subplot(313)
+        axes3.set_xlabel('Time $t$ [s]', fontsize=12)
+        axes3.set_ylabel('Acceleration (RMS) $a_\mathrm{rms}$ [$m/s^2$]', fontsize=12)
+        axes3.minorticks_on()
+        axes3.plot(t, rms_modes_weight[0, :], color='r')
+        axes3.plot([0, t[-1]], [0, 0], '--', color=[0.7, 0.7, 0.7])
+
+        plt.show()
+
 
     return R1_weight, ts_scaled
 

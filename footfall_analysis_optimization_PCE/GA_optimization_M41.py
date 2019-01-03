@@ -24,7 +24,7 @@ M, p, k, bounds, P, n, ts_samp, Y_ED, ts_scaled, index, Psi, reg, y_alpha, Y_rec
 
 # GA optimization
 areas = fn.get_areas()
-bound = (0.05,0.2)
+bound = (1,10)
 bounds_GA = []
 for i in range(M):
     bounds_GA.append(bound)
@@ -35,11 +35,13 @@ res_opt,t_opt = devo_numpy(fn=res_PCE,bounds=bounds_GA,population=100,generation
 
 stop = time()
 
-print(t_opt)
-
-
 # scale the thickness
 t_opt_scaled = fn.get_scaledThickness(areas, np.array(t_opt))
 print('optimized response R1 = '+str(res_opt)+' with t = ')
 print(t_opt_scaled)
 print('time: '+str(stop-start)+' s')
+
+# calculate the optimized response
+res_opt_rec,t_opt_scaled_rec = fn.evaluate_response(t_opt_scaled,te=3,plot=True)
+print('res_opt_rec='+str(res_opt_rec))
+
