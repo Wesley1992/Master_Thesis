@@ -15,6 +15,7 @@ import timeit
 from pyDOE2 import lhs
 import io
 import sys
+import datetime
 
 n_v = 16
 n_r = 21
@@ -204,6 +205,7 @@ def evaluate_response(ts,te=1,plot=False):
             os.remove(file)
 
     print('abaqus starts modal analysis')
+    print('time: ' + str(datetime.datetime.now()))
 
     # monitor abaqus, if analysis failed, stop the process
     backup = sys.stdout
@@ -441,7 +443,7 @@ def get_areas():
 
     return areas
 
-def sampling(strategy,bounds,M,n):
+def sampling(strategy,bounds,M,n,M1):
     """generate samples
 
     Parameters
@@ -453,6 +455,8 @@ def sampling(strategy,bounds,M,n):
         dimension of model
     n : int
         number of samples
+    M1: int
+        the dimension that should be scaled as 1 (basis)
 
     Returns
     -------
@@ -472,7 +476,7 @@ def sampling(strategy,bounds,M,n):
         samples = np.transpose(lhs(M-1, samples=n))
         samples = bounds_log[0] + (bounds_log[1] - bounds_log[0]) * samples
         samples = 10**samples
-        samples = np.vstack([np.ones(n),samples])
+        samples = np.reshape(np.insert(samples,n*(M1-1),np.ones(n)),(M,n))
 
     return samples
 

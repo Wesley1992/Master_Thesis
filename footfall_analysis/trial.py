@@ -1,4 +1,6 @@
-import io
-import sys
+import numpy as np
 
-print(25%4)
+a = np.array([1,2])
+print(a.copy)
+print(a.shape)
+

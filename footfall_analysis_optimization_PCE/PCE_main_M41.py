@@ -4,12 +4,13 @@ import pickle
 import timeit
 import PCE_functions as fn
 from sklearn.linear_model import LinearRegression
+import os
 
 ### define input parameters
 # number of input variables (model dimension), tv and tr for test
 M = 41
 # max total degree
-p = 1
+p = 2
 # oversampling rate
 k = 2
 # bounds for log-uniform distribution
@@ -20,7 +21,7 @@ P = fact(M+p)/(fact(M)*fact(p))
 # total runs of experimental design (input number of each variable)
 n = int(k*P)
 # sampling (initial thickness, to be scaled later)
-ts_samp = fn.sampling('log_uniform', bounds, M, n) # shape=M*n
+ts_samp = fn.sampling('log_uniform', bounds, M, n,M1=1) # shape=M*n
 
 ### evaluate experimental design
 # scaled thickness of all panels for all experimental designs
@@ -36,8 +37,15 @@ for i in range(n):
 
     if i%10 == 9:
         with open('D:/Master_Thesis/code_data/footfall_analysis_optimization_PCE/data/M' + str(M) + '_p' + str(
-                p) + '_k' + str(k) + '_temp_n'+str(i+1)+'pkl', 'wb') as data:
+                p) + '_k' + str(k) + '_temp_n'+str(i+1)+'_3.pkl', 'wb') as data:
             pickle.dump([Y_ED, ts_scaled], data)
+        try:
+            os.remove(
+                'D:/Master_Thesis/code_data/footfall_analysis_optimization_PCE/data/M' + str(
+                    M) + '_p' + str(
+                    p) + '_k' + str(k) + '_temp_n' + str(i - 9) + '_3.pkl')
+        except:
+            pass
 
     stop = timeit.default_timer()
     print('********** evaluation of the ' + str(i + 1) + 'th experimental design finished, time = '+str(stop-start)+' s\n')
