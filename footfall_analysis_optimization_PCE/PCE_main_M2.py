@@ -13,7 +13,9 @@ p = 2
 # oversampling rate
 k = 2
 # bounds for log-uniform distribution
-bounds = [1/10,10]
+bound_log = [1/5,5]
+# bounds for uniform distribution
+bound_uni = [0.01,0.2]
 # number of vault and rib panels !!! only for test
 n_v = 16
 n_r = 21
@@ -23,31 +25,48 @@ n_r_h = 4
 P = fact(M+p)/(fact(M)*fact(p))
 # total runs of experimental design (input number of each variable)
 n = int(k*P)
-# sampling (initial thickness, to be scaled later)
-ts_samp = fn.sampling('log_uniform', bounds, M, n) # shape=M*n
+# sampling
+ts_samp_log = fn.sampling('log_uniform', bound_log, M, n,1) # shape=M*n
+ts_samp_uni = fn.sampling('uniform', bound_uni, M, n)
 
 ### evaluate experimental design
 # TODO: not to differentiate between vault and ribs later !!! only for test
 # original thickness of all panels for all experimental designs
-ts = np.zeros((n_v+n_r+n_r_h,n))
-ts[:n_v] = ts_samp[0].copy()      # vault thickness
-ts[n_v:] = ts_samp[1].copy()      # ribs thickness
+ts_log = np.zeros((n_v+n_r+n_r_h,n))
+ts_uni = np.zeros((n_v+n_r+n_r_h,n))
 
-Y_ED = np.zeros(n)
+ts_log[:n_v] = ts_samp_log[0].copy()      # vault thickness
+ts_log[n_v:] = ts_samp_log[1].copy()      # ribs thickness
+
+ts_uni[:n_v] = ts_samp_uni[0].copy()      # vault thickness
+ts_uni[n_v:] = ts_samp_uni[1].copy()      # ribs thickness
+
+Y_ED_log = np.zeros(n)
+Y_ED_uni = np.zeros(n)
 # scaled thickness of all panels for all experimental designs
-ts_scaled = []
+ts_scaled_log = []
+ts_scaled_uni = []
+
 # scaled thickness of vault and ribs in this particular case !!! only for test
-ts_vr_scaled = np.zeros((M, n))
+ts_vr_scaled_log = np.zeros((M, n))
+ts_vr_scaled_uni = np.zeros((M, n))
+
 # start evaluating
 for i in range(n):
     print('\n********** start evaluating the ' + str(i + 1) + 'th of ' + str(n) + ' experimental designs **********')
     start = timeit.default_timer()
 
-    Y_ED[i],t_scaled = fn.evaluate_response(ts[:,i])
-    ts_scaled.append(t_scaled)
+    Y_ED_log[i],t_scaled_log = fn.evaluate_response(ts_log[:,i])
+    ts_scaled_log.append(t_scaled_log)
     # !!! only for test
-    ts_vr_scaled[0][i] = t_scaled[0]
-    ts_vr_scaled[1][i] = t_scaled[n_v]
+    ts_vr_scaled_log[0][i] = t_scaled_log[0]
+    ts_vr_scaled_log[1][i] = t_scaled_log[n_v]
+
+    Y_ED_uni[i], t_scaled_uni = fn.evaluate_response(ts_uni[:, i])
+    ts_scaled_uni.append(t_scaled_uni)
+    # !!! only for test
+    ts_vr_scaled_uni[0][i] = t_scaled_uni[0]
+    ts_vr_scaled_uni[1][i] = t_scaled_uni[n_v]
 
     stop = timeit.default_timer()
     print('********** evaluation of the ' + str(i + 1) + 'th experimental design finished, time = '+str(stop-start)+' s\n')
@@ -57,7 +76,9 @@ index = fn.create_degreeIndex(M,p)
 
 # create Psi matrix
 # !!! ts_ED_scaled only for this case
-Psi = fn.create_Psi(index, ts_vr_scaled, 'normal')
+Psi_log = fn.create_Psi(index, ts_vr_scaled_log, 'normal')
+Psi_uni = fn.create_Psi(index, ts_vr_scaled_uni, 'normal')
+
 
 # calculate polynomial coefficients
 reg = LinearRegression()

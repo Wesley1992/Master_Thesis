@@ -151,35 +151,39 @@ def Wb(f):
         Wb = 16 / f
     return Wb
 
-def evaluate_response(ts,te=1,plot=False):
+def evaluate_response(ts,scale=True,te=1,plot=False,l2d=15):
 
     global n_v,n_r,n_r_h
 
-    mdl = Structure.load_from_obj('D:/Master_Thesis/modal/modal_symmetric/mdl_span5_l2d10_gamma1_mesh_symmetric.obj',
+    mdl = Structure.load_from_obj('D:/Master_Thesis/modal/modal_symmetric/mdl_span5_l2d'+str(l2d)+'_gamma1_mesh_symmetric.obj',
                                   output=0)
-    mdl.name = 'mdl_span5_l2d10_gamma1_mesh_symmetric_opt'
+    mdl.name = 'mdl_span5_l2d'+str(l2d)+'_gamma1_mesh_symmetric_opt'
 
-    v0 = 5 ** 3 / 10 * 0.4 / 4  # span**3/l2d*ratio/4, initial volume
+    v0 = 5 ** 3 / l2d * 0.4 / 4  # span**3/l2d*ratio/4, initial volume
     v = 0
 
-    for i in range(n_v):
-        t_v = ts[i]
-        a_v = mdl.areas['elset_vault_{0}'.format(i + 1)]
-        v += t_v * a_v
+    if scale:
+        for i in range(n_v):
+            t_v = ts[i]
+            a_v = mdl.areas['elset_vault_{0}'.format(i + 1)]
+            v += t_v * a_v
 
-    for i in range(n_r):
-        t_r = ts[n_v + i]
-        a_r = mdl.areas['elset_ribs_{0}'.format(i + 1)]
-        v += t_r * a_r
+        for i in range(n_r):
+            t_r = ts[n_v + i]
+            a_r = mdl.areas['elset_ribs_{0}'.format(i + 1)]
+            v += t_r * a_r
 
-    for i in range(n_r, n_r + n_r_h):
-        t_r_h = ts[n_v + i] / 2
-        a_r_h = mdl.areas['elset_ribs_{0}'.format(i + 1)]
-        v += t_r_h * a_r_h
+        for i in range(n_r, n_r + n_r_h):
+            t_r_h = ts[n_v + i] / 2
+            a_r_h = mdl.areas['elset_ribs_{0}'.format(i + 1)]
+            v += t_r_h * a_r_h
 
-    scale = v0 / v
+        scale = v0 / v
 
-    ts_scaled = scale * ts
+        ts_scaled = scale * ts
+
+    else:
+        ts_scaled = ts
 
     for i in range(n_v):
         t_v = ts_scaled[i]
@@ -192,6 +196,8 @@ def evaluate_response(ts,te=1,plot=False):
     for i in range(n_r, n_r + n_r_h):
         t_r_h = ts_scaled[n_v + i] / 2
         mdl.sections['sec_ribs_{0}'.format(i + 1)].geometry['t'] = t_r_h
+
+
     # # !!! only for test
     # print('!!! t_v=' + str(t_v))
     # print('!!! t_r=' + str(t_r))
@@ -443,7 +449,7 @@ def get_areas():
 
     return areas
 
-def sampling(strategy,bounds,M,n,M1):
+def sampling(strategy,bounds,M,n,M1=1):
     """generate samples
 
     Parameters

@@ -12,15 +12,16 @@ p = 1
 k = 2
 # delta for morris sensitivity analysis
 d = 0.001
+M1 = 16
 # sampling number
 n_morris = 10
 
 # load data file
-file_name = 'D:/Master_Thesis/code_data/footfall_analysis_optimization_PCE/data/M'+str(M)+'_p'+str(p)+'_k'+str(k)+'_actualThickness_logUniform.pkl'
+file_name = 'D:/Master_Thesis/code_data/footfall_analysis_optimization_PCE/data/M'+str(M)+'_p'+str(p)+'_k'+str(k)+'_logUniform_M1_'+str(M1)+'.pkl'
 M, p, k, bounds, P, n, ts_samp, Y_ED, ts_scaled, index, Psi, reg, y_alpha, Y_rec, k_new, n_new, ts_samp_new, ts_scaled_new, Psi_new, Y_new = pickle.load(open(file_name,'rb'))
 
 # Morris sensitivity analysis
-ts_samp_morris = fn.sampling('log_uniform', bounds, M, n_morris) # shape=M*n
+ts_samp_morris = fn.sampling('log_uniform', bounds, M, n_morris,M1=M1) # shape=M*n
 ts_scaled_morris = np.zeros((M,n_morris))
 areas = fn.get_areas()
 for i in range(n_morris):
@@ -76,21 +77,27 @@ for i in range(M):
     IOC[i]=pearsonr(ts_scaled[i,:],Y_ED)[0]
 print('IOC')
 print(IOC)
+IOC_sort = sorted(IOC,key=abs,reverse=True)
+index_sort = np.flip(np.argsort(np.abs(IOC)),axis=0)+1
+print('IOC_sort')
+print(IOC_sort)
+print('index_sort')
+print(index_sort)
 
 
 ### plot
-# # mu_D-sigma_D plot
-# fig  = plt.figure()
-# ax = fig.add_subplot(111)
-# ax.set_title('Morris sensitivity analysis', fontsize=12)
-# ax.set_xlabel('Mean ($\mu$)', fontsize=12)
-# ax.set_ylabel('Std deviation ($\sigma$)', fontsize=12)
-# ax.scatter(mu_D, sigma_D, )
-# text = [i for i in range(1,M+1)]
-# i=0
-# for x,y in zip(mu_D,sigma_D):
-#     ax.annotate(str(i), xy=(x, y))
-#     i+=1
+# mu_D-sigma_D plot
+fig  = plt.figure()
+ax = fig.add_subplot(111)
+ax.set_title('Morris sensitivity analysis', fontsize=12)
+ax.set_xlabel('Mean ($\mu$)', fontsize=12)
+ax.set_ylabel('Std deviation ($\sigma$)', fontsize=12)
+ax.scatter(mu_D, sigma_D, )
+text = [i for i in range(1,M+1)]
+i=0
+for x,y in zip(mu_D,sigma_D):
+    ax.annotate(str(i), xy=(x, y))
+    i+=1
 
 # input/output plot
 for i in range(M):

@@ -4,12 +4,24 @@ import numpy as np
 
 # input for loading file
 spans = [5]
-l2ds = [10]
-gammas = [10]
+l2ds = [15]
+gammas = [1]
 
 # spans = [5,6,7,8,9,10]
 # l2ds = [10,12.5,15,17.5,20]
 # gammas = [0.1,0.5,1,2,5,10]
+
+file_name = 'D:/Master_Thesis/code_data/footfall_analysis/data/data_mdl_0_4m/data_t_a_v.pkl'
+t,a,v = pickle.load(open(file_name,'rb'))
+t = np.array(t)
+
+# m1 that should keep constant
+m1_const = 850
+# +-deviation from m1_check
+dev = 0.1
+
+n_const = 0
+
 
 for span in spans:
     for l2d in l2ds:
@@ -18,11 +30,20 @@ for span in spans:
 
             f_n, m_n, node_lp, n_modes, dt, t, dis_modes_lp, vel_modes_lp, acc_modes_lp, acc_modes_lp_weight, rms_modes,rms_modes_weight, R, R_weight, Gamma_n = pickle.load(open(file_name,'rb'))
 
+            # if m1_const*(1-dev)<m_n[0]<m1_const*(1+dev):
             print('span='+str(span)+'m,l/d='+str(l2d)+',gamma='+str(gamma))
-            print('f1: ',f_n[0])
             print('m1: ', m_n[0])
-            print('m1/m: ', m_n[0]/(span**3/l2d*2400*0.4))
-            print('R1: ',R_weight[0],'\n')
+            print('R1: ',R_weight[0])
+            print('f1: ',f_n[0],'\n')
+            # print('R1*m1*f1^1.5 = '+str(R_weight[0]*m_n[0]*f_n[0]**1.5),'\n')
+            # n_const += 1
+
+# print('number of points: '+str(n_const))
+
+            # print('m1/m: ', m_n[0]/(span**3/l2d*2400*0.4))
+            # print('R1: ',R_weight[0],'\n')
+            # print('R1/R: ', R_weight[0]/R_weight[-1],'\n')
+            # print('R1: ', R_weight[0], '\n')
 
             ### plot
 
