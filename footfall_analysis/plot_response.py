@@ -292,20 +292,20 @@ ax.legend()
 # # ax.legend()
 #
 #
-# ### span,gamma-m1 contour plot
-# fig, ax = plt.subplots()
-# ax.set_title('span,$t_v/t_r-m_1$ contour')
-# ax.set_xlabel('span [m]')
-# ax.set_ylabel('$t_v/t_r$')
-# ax.set_yscale('log')
+### span,gamma-m1 contour plot
+fig, ax = plt.subplots()
+ax.set_title('span,$t_v/t_r-m_1$ contour')
+ax.set_xlabel('span [m]')
+ax.set_ylabel('$t_v/t_r$')
+ax.set_yscale('log')
 # colors = ['C0', 'C1', 'C2', 'C3', 'C4']
-# # colors = ['b', 'g', 'r', 'c', 'm']
-#
-# for i in range(len(l2ds)):
-#     contour = ax.contour(l_gamma_mesh_l, l_gamma_mesh_gamma, np.transpose(m1[:,i,:]),[200,300,400,500,750,1000,1500,2000,3000,4000,5000,6000],colors=colors[i])
-#     ax.clabel(contour,fontsize=10,fmt='%1.1f')
-#     contour.collections[i].set_label('l/d='+str(l2ds[i]))
-# ax.legend()
+colors = ['b', 'g', 'r', 'c', 'm']
+
+for i in range(len(l2ds)):
+    contour = ax.contour(l_gamma_mesh_l, l_gamma_mesh_gamma, np.transpose(m1[:,i,:]),[200,300,400,500,750,1000,1500,2000,3000,4000,5000,6000],colors=colors[i])
+    ax.clabel(contour,fontsize=10,fmt='%1.1f')
+    contour.collections[i].set_label('l/d='+str(l2ds[i]))
+ax.legend()
 #
 #
 # ### l/d,gamma-m1 contour plot
