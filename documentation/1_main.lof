@@ -1,0 +1,47 @@
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {1.1}{\ignorespaces A prototype of the rib-stiffened valued floor \cite {prototype}\relax }}{2}{figure.caption.4}% 
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Work flow for evaluation of vibration\relax }}{11}{figure.caption.5}% 
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Mesh models with different spans\relax }}{13}{figure.caption.6}% 
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Footfall loading for one walking cycle\relax }}{15}{figure.caption.8}% 
+\contentsline {figure}{\numberline {3.4}{\ignorespaces The first 4 unique modes of floor with $l=5m, l/d=20, t_v/t_r=1$\relax }}{17}{figure.caption.9}% 
+\contentsline {figure}{\numberline {3.5}{\ignorespaces Frequency weighting $W_b$\relax }}{19}{figure.caption.10}% 
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Geometric parameters-modal mass (first mode) scatter plot\relax }}{22}{figure.caption.12}% 
+\contentsline {figure}{\numberline {4.2}{\ignorespaces $l, t_v/t_r - m_1$ contour plot\relax }}{23}{figure.caption.13}% 
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Relative change of $m_1/m$ in relation to l/d\relax }}{24}{figure.caption.15}% 
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Geometric parameters-modal mass (first mode) proportion scatter plot\relax }}{24}{figure.caption.14}% 
+\contentsline {figure}{\numberline {4.5}{\ignorespaces Geometric parameters-natural frequency (first mode) scatter plot\relax }}{25}{figure.caption.16}% 
+\contentsline {figure}{\numberline {4.6}{\ignorespaces $m_1 - f_1$ scatter plot\relax }}{26}{figure.caption.17}% 
+\contentsline {figure}{\numberline {4.7}{\ignorespaces first mode shapes with $t_v/t_r=0.1,1,10$ from left to right\relax }}{26}{figure.caption.18}% 
+\contentsline {figure}{\numberline {4.8}{\ignorespaces Damping ratio in relation to angular frequency \cite {chopra2007dynamics} with notation $a_0=\alpha $, $a_1=\beta $ \relax }}{28}{figure.caption.19}% 
+\contentsline {figure}{\numberline {4.9}{\ignorespaces Comparison of footfall response calculated by Abaqus and by Python with modal superposition\relax }}{29}{figure.caption.20}% 
+\contentsline {figure}{\numberline {4.10}{\ignorespaces The whole picture of acceleration with extreme value\relax }}{29}{figure.caption.21}% 
+\contentsline {figure}{\numberline {4.11}{\ignorespaces Original and weighted rms-acceleration\relax }}{30}{figure.caption.22}% 
+\contentsline {figure}{\numberline {4.12}{\ignorespaces Response factor and participation factor in relation to modes involved in modal superposition\relax }}{31}{figure.caption.23}% 
+\contentsline {figure}{\numberline {4.13}{\ignorespaces Contribution factor in relation to modes involved in modal superposition\relax }}{32}{figure.caption.24}% 
+\contentsline {figure}{\numberline {4.15}{\ignorespaces Geometric parameters-response factor scatter plot\relax }}{34}{figure.caption.26}% 
+\contentsline {figure}{\numberline {4.14}{\ignorespaces Geometric parameters-response factor contour plot\relax }}{35}{figure.caption.25}% 
+\contentsline {figure}{\numberline {4.16}{\ignorespaces $m_1,f_1-R_1$ contour plot\relax }}{37}{figure.caption.27}% 
+\contentsline {figure}{\numberline {4.17}{\ignorespaces Modal parameter- modal response factor scatter plot\relax }}{38}{figure.caption.28}% 
+\contentsline {figure}{\numberline {4.18}{\ignorespaces Normalized $m_1,f_1,R_1$ in relation to $t_v/t_r$\relax }}{39}{figure.caption.29}% 
+\contentsline {figure}{\numberline {4.19}{\ignorespaces Normalized $m_1,f_1,R_1$ of points with roughly constant $m_1$\relax }}{40}{figure.caption.30}% 
+\contentsline {figure}{\numberline {4.20}{\ignorespaces Normalized $m_1,f_1^{1.5},R_1$ of points with roughly constant $m_1$\relax }}{40}{figure.caption.31}% 
+\contentsline {figure}{\numberline {4.21}{\ignorespaces True and predicted modal response factor in modal space\relax }}{41}{figure.caption.32}% 
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Acceptable/failed floors shown in $m_1-f_1$ scatter plot\relax }}{44}{figure.caption.33}% 
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Two regions in the middle for additional mass\relax }}{45}{figure.caption.34}% 
+\contentsline {figure}{\numberline {5.3}{\ignorespaces Normalized $m_1,f_1,R_1$ of optimized floor in relation to mass increase (span=5m, density change, middle 1)\relax }}{46}{figure.caption.35}% 
+\contentsline {figure}{\numberline {5.4}{\ignorespaces Normalized $m_1,f_1,R_1$ of optimized floor in relation to mass increase (span=5m, density change, middle 2)\relax }}{47}{figure.caption.36}% 
+\contentsline {figure}{\numberline {5.5}{\ignorespaces Normalized $m_1,f_1,R_1$ of optimized floor in relation to mass increase (span=5m, thickness change, middle 1)\relax }}{48}{figure.caption.37}% 
+\contentsline {figure}{\numberline {5.6}{\ignorespaces Normalized $m_1,f_1,R_1$ of optimized floor in relation to mass increase (span=5m, thickness change, middle 2)\relax }}{49}{figure.caption.38}% 
+\contentsline {figure}{\numberline {5.7}{\ignorespaces Four improvement schemes presented on $m_1,f_1-R_1$ contour plot\relax }}{51}{figure.caption.40}% 
+\contentsline {figure}{\numberline {5.8}{\ignorespaces One-quarter model of the floor with $l=5m,l/d=15$\relax }}{52}{figure.caption.41}% 
+\contentsline {figure}{\numberline {5.9}{\ignorespaces Flow chart of surrogate model based optimization\relax }}{54}{figure.caption.42}% 
+\contentsline {figure}{\numberline {5.10}{\ignorespaces Thickness input samples of two floors\relax }}{57}{figure.caption.43}% 
+\contentsline {figure}{\numberline {5.11}{\ignorespaces Optimized mass distribution of floor $l=5m,l/d=10$\relax }}{59}{figure.caption.44}% 
+\contentsline {figure}{\numberline {5.12}{\ignorespaces Optimized mass distribution of floor $l=5m,l/d=15$\relax }}{60}{figure.caption.45}% 
+\contentsline {figure}{\numberline {5.13}{\ignorespaces Mass distribution of two optimized floors with different schemes\relax }}{61}{figure.caption.46}% 
+\contentsline {figure}{\numberline {5.14}{\ignorespaces Comparison of dynamic performance between initial and optimized floors\relax }}{62}{figure.caption.47}% 
+\addvspace {10\p@ }

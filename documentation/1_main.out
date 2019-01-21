@@ -1,0 +1,49 @@
+\BOOKMARK [0][-]{chapter.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.1.1}{Vibration problems in modern buildings}{chapter.1}% 2
+\BOOKMARK [1][-]{section.1.2}{Rib-stiffened vaulted floor}{chapter.1}% 3
+\BOOKMARK [1][-]{section.1.3}{Statement of problems}{chapter.1}% 4
+\BOOKMARK [1][-]{section.1.4}{Objectives}{chapter.1}% 5
+\BOOKMARK [1][-]{section.1.5}{Thesis structure}{chapter.1}% 6
+\BOOKMARK [0][-]{chapter.2}{Literature review}{}% 7
+\BOOKMARK [1][-]{section.2.1}{Natural frequency based traditional evaluation methods}{chapter.2}% 8
+\BOOKMARK [1][-]{section.2.2}{Performance based approaches}{chapter.2}% 9
+\BOOKMARK [1][-]{section.2.3}{State of the art in design codes and research}{chapter.2}% 10
+\BOOKMARK [0][-]{chapter.3}{Methodology for evaluation of dynamic performance}{}% 11
+\BOOKMARK [1][-]{section.3.1}{General work flow}{chapter.3}% 12
+\BOOKMARK [1][-]{section.3.2}{Modeling}{chapter.3}% 13
+\BOOKMARK [2][-]{subsection.3.2.1}{Mesh model generation}{section.3.2}% 14
+\BOOKMARK [2][-]{subsection.3.2.2}{Material of choice}{section.3.2}% 15
+\BOOKMARK [2][-]{subsection.3.2.3}{Structural considerations}{section.3.2}% 16
+\BOOKMARK [2][-]{subsection.3.2.4}{Footfall loading}{section.3.2}% 17
+\BOOKMARK [1][-]{section.3.3}{Solution of dynamic response}{chapter.3}% 18
+\BOOKMARK [2][-]{subsection.3.3.1}{Theoretical background of modal superposition}{section.3.3}% 19
+\BOOKMARK [2][-]{subsection.3.3.2}{Modal analysis}{section.3.3}% 20
+\BOOKMARK [2][-]{subsection.3.3.3}{Response time history}{section.3.3}% 21
+\BOOKMARK [1][-]{section.3.4}{Evaluation of vibration perception}{chapter.3}% 22
+\BOOKMARK [0][-]{chapter.4}{Results of dynamic analysis}{}% 23
+\BOOKMARK [1][-]{section.4.1}{Modal analysis}{chapter.4}% 24
+\BOOKMARK [2][-]{subsection.4.1.1}{Modal mass}{section.4.1}% 25
+\BOOKMARK [2][-]{subsection.4.1.2}{Natural frequency}{section.4.1}% 26
+\BOOKMARK [2][-]{subsection.4.1.3}{Mode shape}{section.4.1}% 27
+\BOOKMARK [1][-]{section.4.2}{Solution of response time history}{chapter.4}% 28
+\BOOKMARK [2][-]{subsection.4.2.1}{Modeling in Abaqus}{section.4.2}% 29
+\BOOKMARK [2][-]{subsection.4.2.2}{Calibration of results with Abaqus}{section.4.2}% 30
+\BOOKMARK [2][-]{subsection.4.2.3}{Frequency weighted response}{section.4.2}% 31
+\BOOKMARK [2][-]{subsection.4.2.4}{Number of modes for modal superposition}{section.4.2}% 32
+\BOOKMARK [2][-]{subsection.4.2.5}{Advantages of modal superposition}{section.4.2}% 33
+\BOOKMARK [1][-]{section.4.3}{Evaluation of dynamic performance}{chapter.4}% 34
+\BOOKMARK [2][-]{subsection.4.3.1}{Influence of geometric parameters}{section.4.3}% 35
+\BOOKMARK [2][-]{subsection.4.3.2}{Influence of modal parameters}{section.4.3}% 36
+\BOOKMARK [0][-]{chapter.5}{Optimization of the floor for dynamic performance}{}% 37
+\BOOKMARK [1][-]{section.5.1}{Improvements by mass addition}{chapter.5}% 38
+\BOOKMARK [1][-]{section.5.2}{Surrogate model based optimization}{chapter.5}% 39
+\BOOKMARK [2][-]{subsection.5.2.1}{One-quarter mesh model}{section.5.2}% 40
+\BOOKMARK [2][-]{subsection.5.2.2}{Work flow}{section.5.2}% 41
+\BOOKMARK [2][-]{subsection.5.2.3}{PCE surrogate model}{section.5.2}% 42
+\BOOKMARK [2][-]{subsection.5.2.4}{Input sampling}{section.5.2}% 43
+\BOOKMARK [2][-]{subsection.5.2.5}{Results of GA optimization}{section.5.2}% 44
+\BOOKMARK [0][-]{chapter.6}{Conclusion and outlook}{}% 45
+\BOOKMARK [1][-]{section.6.1}{Dynamic behavior of the floor}{chapter.6}% 46
+\BOOKMARK [1][-]{section.6.2}{Optimization of the floor}{chapter.6}% 47
+\BOOKMARK [1][-]{section.6.3}{Limitation and future work}{chapter.6}% 48
+\BOOKMARK [0][-]{section.6.3}{Bibliography}{}% 49

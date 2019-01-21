@@ -1,0 +1,15 @@
+This is BibTeX, Version 0.99dThe top-level auxiliary file: 1_main.aux
+A level-1 auxiliary file: abstract.aux
+A level-1 auxiliary file: chapter1.aux
+A level-1 auxiliary file: chapter2.aux
+A level-1 auxiliary file: chapter3.aux
+A level-1 auxiliary file: chapter4.aux
+A level-1 auxiliary file: chapter5.aux
+A level-1 auxiliary file: chapter6.aux
+The style file: unsrtnat.bst
+Database file #1: refs.bib
+Warning--entry type for "prototype" isn't style-file defined
+--line 115 of file refs.bib
+Warning--can't use both volume and number fields in lopez2014prototype
+Warning--there's a number but no volume in sedlacek2006generalisation
+(There were 3 warnings)

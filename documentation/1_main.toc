@@ -1,0 +1,49 @@
+\contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}% 
+\contentsline {section}{\numberline {1.1}Vibration problems in modern buildings}{1}{section.1.1}% 
+\contentsline {section}{\numberline {1.2}Rib-stiffened vaulted floor}{1}{section.1.2}% 
+\contentsline {section}{\numberline {1.3}Statement of problems}{4}{section.1.3}% 
+\contentsline {section}{\numberline {1.4}Objectives}{4}{section.1.4}% 
+\contentsline {section}{\numberline {1.5}Thesis structure}{5}{section.1.5}% 
+\contentsline {chapter}{\numberline {2}Literature review}{6}{chapter.2}% 
+\contentsline {section}{\numberline {2.1}Natural frequency based traditional evaluation methods}{6}{section.2.1}% 
+\contentsline {section}{\numberline {2.2}Performance based approaches}{7}{section.2.2}% 
+\contentsline {section}{\numberline {2.3}State of the art in design codes and research}{8}{section.2.3}% 
+\contentsline {chapter}{\numberline {3}Methodology for evaluation of dynamic performance}{10}{chapter.3}% 
+\contentsline {section}{\numberline {3.1}General work flow}{10}{section.3.1}% 
+\contentsline {section}{\numberline {3.2}Modeling}{11}{section.3.2}% 
+\contentsline {subsection}{\numberline {3.2.1}Mesh model generation}{11}{subsection.3.2.1}% 
+\contentsline {subsection}{\numberline {3.2.2}Material of choice}{13}{subsection.3.2.2}% 
+\contentsline {subsection}{\numberline {3.2.3}Structural considerations}{14}{subsection.3.2.3}% 
+\contentsline {subsection}{\numberline {3.2.4}Footfall loading}{14}{subsection.3.2.4}% 
+\contentsline {section}{\numberline {3.3}Solution of dynamic response}{16}{section.3.3}% 
+\contentsline {subsection}{\numberline {3.3.1}Theoretical background of modal superposition}{16}{subsection.3.3.1}% 
+\contentsline {subsection}{\numberline {3.3.2}Modal analysis}{17}{subsection.3.3.2}% 
+\contentsline {subsection}{\numberline {3.3.3}Response time history}{17}{subsection.3.3.3}% 
+\contentsline {section}{\numberline {3.4}Evaluation of vibration perception}{18}{section.3.4}% 
+\contentsline {chapter}{\numberline {4}Results of dynamic analysis}{21}{chapter.4}% 
+\contentsline {section}{\numberline {4.1}Modal analysis}{21}{section.4.1}% 
+\contentsline {subsection}{\numberline {4.1.1}Modal mass}{21}{subsection.4.1.1}% 
+\contentsline {subsection}{\numberline {4.1.2}Natural frequency}{24}{subsection.4.1.2}% 
+\contentsline {subsection}{\numberline {4.1.3}Mode shape}{26}{subsection.4.1.3}% 
+\contentsline {section}{\numberline {4.2}Solution of response time history}{27}{section.4.2}% 
+\contentsline {subsection}{\numberline {4.2.1}Modeling in Abaqus}{27}{subsection.4.2.1}% 
+\contentsline {subsection}{\numberline {4.2.2}Calibration of results with Abaqus}{28}{subsection.4.2.2}% 
+\contentsline {subsection}{\numberline {4.2.3}Frequency weighted response}{30}{subsection.4.2.3}% 
+\contentsline {subsection}{\numberline {4.2.4}Number of modes for modal superposition}{30}{subsection.4.2.4}% 
+\contentsline {subsection}{\numberline {4.2.5}Advantages of modal superposition}{32}{subsection.4.2.5}% 
+\contentsline {section}{\numberline {4.3}Evaluation of dynamic performance}{33}{section.4.3}% 
+\contentsline {subsection}{\numberline {4.3.1}Influence of geometric parameters}{33}{subsection.4.3.1}% 
+\contentsline {subsection}{\numberline {4.3.2}Influence of modal parameters}{36}{subsection.4.3.2}% 
+\contentsline {chapter}{\numberline {5}Optimization of the floor for dynamic performance}{43}{chapter.5}% 
+\contentsline {section}{\numberline {5.1}Improvements by mass addition}{44}{section.5.1}% 
+\contentsline {section}{\numberline {5.2}Surrogate model based optimization}{51}{section.5.2}% 
+\contentsline {subsection}{\numberline {5.2.1}One-quarter mesh model}{51}{subsection.5.2.1}% 
+\contentsline {subsection}{\numberline {5.2.2}Work flow}{52}{subsection.5.2.2}% 
+\contentsline {subsection}{\numberline {5.2.3}PCE surrogate model}{54}{subsection.5.2.3}% 
+\contentsline {subsection}{\numberline {5.2.4}Input sampling}{56}{subsection.5.2.4}% 
+\contentsline {subsection}{\numberline {5.2.5}Results of GA optimization}{57}{subsection.5.2.5}% 
+\contentsline {chapter}{\numberline {6}Conclusion and outlook}{64}{chapter.6}% 
+\contentsline {section}{\numberline {6.1}Dynamic behavior of the floor}{64}{section.6.1}% 
+\contentsline {section}{\numberline {6.2}Optimization of the floor}{65}{section.6.2}% 
+\contentsline {section}{\numberline {6.3}Limitation and future work}{65}{section.6.3}% 
+\contentsline {chapter}{Bibliography}{67}{section.6.3}% 

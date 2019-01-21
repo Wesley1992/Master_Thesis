@@ -1,0 +1,103 @@
+\begin{thebibliography}{15}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Bachmann et~al.(2012)Bachmann, Ammann, Deischl, Eisenmann, Floegl,
+  Hirsch, Klein, Lande, Mahrenholtz, Natke, et~al.]{bachmann2012vibration}
+Hugo Bachmann, Walter~J Ammann, Florian Deischl, Josef Eisenmann, Ingomar
+  Floegl, Gerhard~H Hirsch, G{\"u}nter~K Klein, G{\"o}ran~J Lande, Oskar
+  Mahrenholtz, Hans~G Natke, et~al.
+\newblock \emph{Vibration problems in structures: practical guidelines}.
+\newblock Birkh{\"a}user, 2012.
+
+\bibitem[ETHZ(2014)]{prototype}
+BRG ETHZ.
+\newblock Rib-stiffened valued floor system, 2014.
+\newblock URL
+  \url{http://block.arch.ethz.ch/brg/research/rib-stiffened-funicular-floor-system}.
+
+\bibitem[L{\'o}pez et~al.(2014)L{\'o}pez, Veenendaal, Akbarzadeh, and
+  Block]{lopez2014prototype}
+David~L{\'o}pez L{\'o}pez, Diederik Veenendaal, Masoud Akbarzadeh, and Philippe
+  Block.
+\newblock Prototype of an ultra-thin, concrete vaulted floor system.
+\newblock In \emph{Proceedings of IASS Annual Symposia}, volume 2014, pages
+  1--8. International Association for Shell and Spatial Structures (IASS),
+  2014.
+
+\bibitem[Smith et~al.(2007)Smith, Hicks, and Devine]{smith2007design}
+Andrew~L Smith, Stephen~J Hicks, and Paul~J Devine.
+\newblock \emph{Design of floors for vibration: A new approach}.
+\newblock Steel Construction Institute Ascot, Berkshire, UK, 2007.
+
+\bibitem[Willford et~al.(2007)Willford, Young, and
+  Field]{willford2007predicting}
+M~Willford, P~Young, and C~Field.
+\newblock Predicting footfall-induced vibration: Part 2.
+\newblock \emph{Proceedings of the Institution of Civil Engineers-Structures
+  and Buildings}, 160\penalty0 (2):\penalty0 73--79, 2007.
+
+\bibitem[Howard(2007)]{howard2007modal}
+Carl~Q Howard.
+\newblock Modal mass of clamped beams and clamped plates.
+\newblock \emph{Journal of sound and vibration}, 301\penalty0 (1-2):\penalty0
+  410--414, 2007.
+
+\bibitem[for Standardization(1992)]{european1992eurocode}
+European~Committee for Standardization.
+\newblock \emph{Eurocode 3: Design of steel structures}.
+\newblock CEN, 1992.
+
+\bibitem[Sedlacek et~al.(2006)Sedlacek, Heinemeyer, Butz, VEILING, Waarts,
+  Van~Duin, HICKS, DEVINE, and DEMARCO]{sedlacek2006generalisation}
+G~Sedlacek, C~Heinemeyer, C~Butz, B~VEILING, P~Waarts, F~Van~Duin, S~HICKS,
+  P~DEVINE, and T~DEMARCO.
+\newblock Generalisation of criteria for floor vibrations for industrial,
+  office, residential and public building and gymnastic halls.
+\newblock \emph{EUR}, \penalty0 (21972):\penalty0 1--343, 2006.
+
+\bibitem[Feldmann et~al.(2009)Feldmann, Heinemeyer, Butz, Caetano, Cunha,
+  Galanti, Goldack, Hechler, Hicks, Keil, et~al.]{feldmann2009design}
+M~Feldmann, Ch~Heinemeyer, Chr Butz, E~Caetano, A~Cunha, F~Galanti, A~Goldack,
+  O~Hechler, S~Hicks, A~Keil, et~al.
+\newblock Design of floor structures for human induced vibrations.
+\newblock \emph{JRC--ECCS joint report}, 2009.
+
+\bibitem[Feldmann et~al.(2010)Feldmann, Heinemeyer, Lukic,
+  et~al.]{feldmann2010human}
+M~Feldmann, Ch~Heinemeyer, M~Lukic, et~al.
+\newblock Human-induced vibration of steel structures (hivoss).
+\newblock \emph{Office for Official Publications of the European Communities,
+  Luxembourg}, 2010.
+
+\bibitem[for Standardization(2004{\natexlab{a}})]{european2004eurocode2}
+European~Committee for Standardization.
+\newblock \emph{Eurocode 2: Design of concrete structures}.
+\newblock CEN, 2004{\natexlab{a}}.
+
+\bibitem[for Standardization(2005)]{european2005eurocode3}
+European~Committee for Standardization.
+\newblock \emph{Eurocode 3: Design of steel structures}.
+\newblock CEN, 2005.
+
+\bibitem[for Standardization(2004{\natexlab{b}})]{european2004eurocode4}
+European~Committee for Standardization.
+\newblock \emph{Eurocode 4: Design of composite steel and concrete structures}.
+\newblock CEN, 2004{\natexlab{b}}.
+
+\bibitem[Arup(2004)]{arup2004hospital}
+Ove Arup.
+\newblock Hospital floor vibration study, comparison of possible hospital floor
+  structures with respect to nhs vibration criteria.
+\newblock \emph{London: Ove Arup \& Partners Ltd}, 2004.
+
+\bibitem[Chopra and Chopra(2007)]{chopra2007dynamics}
+Anil~K Chopra and Anil~K Chopra.
+\newblock \emph{Dynamics of structures: theory and applications to earthquake
+  engineering}, volume~3.
+\newblock Pearson/Prentice Hall Upper Saddle River, NJ, 2007.
+
+\end{thebibliography}
